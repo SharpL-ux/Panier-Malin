@@ -12,10 +12,12 @@ import * as lists from '../../services/shoppingList';
 import type { EquivalenceGroup, Product } from '../../types/catalog';
 import type { ShoppingList } from '../../types/list';
 
-function prefersDark(): boolean {
-  return (
-    typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
-  );
+/** Thème initial : réglage imposé par la page hôte (data-theme) s'il existe, sinon préférence du système. */
+function initialTheme(): Theme {
+  if (typeof window === 'undefined') return 'light';
+  const forced = document.documentElement.dataset.theme;
+  if (forced === 'dark' || forced === 'light') return forced;
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 interface ListsState {
@@ -30,9 +32,7 @@ function initialLists(): ListsState {
 
 export function AppProviders({ children }: { children: ReactNode }) {
   // ---- Préférences
-  const [theme, setTheme] = usePersistentState<Theme>('theme', () =>
-    prefersDark() ? 'dark' : 'light',
-  );
+  const [theme, setTheme] = usePersistentState<Theme>('theme', initialTheme);
   const [enseigne, setEnseigne] = usePersistentState<EnseigneChoice>('enseigne', () => 'all');
 
   useEffect(() => {

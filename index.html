@@ -16,7 +16,12 @@
       try {
         var raw = localStorage.getItem('panier-malin:theme');
         var t = raw ? JSON.parse(raw).data : null;
-        var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var forced = document.documentElement.getAttribute('data-theme');
+        var dark = t
+          ? t === 'dark'
+          : forced
+            ? forced === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (dark) document.documentElement.classList.add('dark');
       } catch (e) {}
     </script>
