@@ -6,21 +6,16 @@ body:
   - type: markdown
     attributes:
       value: |
-        Merci ! Le catalogue réunit des produits courants, vendus dans plusieurs magasins.
+        Merci ! Le catalogue réunit des produits courants et halal, vendus dans plusieurs magasins : une fiche par produit, sans marque imposée.
         Pour un produit que vous êtes seul à acheter, le bouton « Ajouter un produit » de l'application suffit : il reste sur votre appareil.
   - type: input
     id: nom
     attributes:
       label: Nom du produit
+      description: Sans marque, par exemple « Lait demi-écrémé UHT » plutôt que « Lait Lactel ».
       placeholder: Lait demi-écrémé UHT
     validations:
       required: true
-  - type: input
-    id: marque
-    attributes:
-      label: Marque
-      description: Laissez vide pour un produit vendu en vrac ou sans marque.
-      placeholder: Lactel
   - type: input
     id: format
     attributes:
@@ -48,9 +43,7 @@ body:
         - Épicerie salée
         - Épicerie sucrée
         - Produits du monde
-        - Halal
         - Boissons
-        - Alcools
         - Bébé
         - Hygiène & Beauté
         - Entretien & Ménage
@@ -59,25 +52,19 @@ body:
         - Surgelés
     validations:
       required: true
-  - type: dropdown
-    id: enseignes
+  - type: textarea
+    id: references
     attributes:
-      label: Où le trouve-t-on ?
-      description: Une marque de distributeur n'est vendue que dans son enseigne.
-      multiple: true
-      options:
-        - Partout (marque nationale ou vrac)
-        - Carrefour
-        - Lidl
-        - E.Leclerc
-        - H Market
-        - Marka Market
-    validations:
-      required: true
+      label: Marque la moins chère dans chaque enseigne
+      description: Une ligne par enseigne que vous connaissez. Laissez vide pour un produit vendu en vrac ou sans marque.
+      placeholder: |
+        Carrefour : Simpl
+        Lidl : Milbona
+        E.Leclerc : Eco+
   - type: input
     id: code-barres
     attributes:
-      label: Code-barres (EAN)
+      label: Code-barres (EAN) de la référence la moins chère
       description: Recopiez-le depuis l'emballage ou la fiche Open Food Facts. Laissez vide en cas de doute, un code-barres faux est pire qu'un code-barres absent.
       placeholder: 13 chiffres
   - type: input
@@ -85,16 +72,12 @@ body:
     attributes:
       label: Lien vers la fiche Open Food Facts
       placeholder: https://world.openfoodfacts.org/product/…
-  - type: input
-    id: equivalent
-    attributes:
-      label: Produits équivalents déjà présents
-      description: Avec quels produits du catalogue peut-on comparer son prix ?
-      placeholder: Les autres laits demi-écrémés UHT
   - type: checkboxes
     id: verifications
     attributes:
       label: Vérifications
       options:
         - label: Les informations viennent de l'emballage ou d'Open Food Facts, pas du site d'une enseigne.
+          required: true
+        - label: Le produit ne contient ni porc, ni alcool, ni gélatine de porc, et sa viande éventuelle est certifiée halal.
           required: true

@@ -13,7 +13,7 @@ body:
     id: produit
     attributes:
       label: Produit concerné
-      placeholder: Beurre doux Président 250 g
+      placeholder: 'Beurre doux 250 g (chez Lidl : Milbona)'
     validations:
       required: true
   - type: input

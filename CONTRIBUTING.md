@@ -2,7 +2,7 @@
 
 Merci de votre intérêt ! Vous pouvez aider sans écrire de code :
 
-- **signaler un produit manquant, un prix étrange ou une équivalence fausse** avec les modèles de tickets du dépôt ;
+- **signaler un produit manquant, un prix étrange ou une référence fausse** avec les modèles de tickets du dépôt ;
 - **ajouter des prix sur [Open Prices](https://prices.openfoodfacts.org)** : c'est la contribution la plus utile, elle profite à cette application comme à toutes les autres ;
 - **vérifier des codes-barres** du catalogue sur [Open Food Facts](https://world.openfoodfacts.org).
 
@@ -39,7 +39,7 @@ Corps facultatif : le pourquoi, plus que le comment.
 | `refactor`    | Réorganisation du code, sans changement de comportement       |
 | `test`        | Ajout ou correction de tests                                  |
 | `docs`        | Documentation                                                 |
-| `data`        | Catalogue : produits, équivalences, codes-barres              |
+| `data`        | Catalogue : fiches, références, codes-barres                  |
 | `ci`, `chore` | Intégration continue, outillage, dépendances                  |
 
 Portées courantes : `catalogue`, `liste`, `prix`, `comparateur`, `pdf`, `ui`.
@@ -51,40 +51,43 @@ Exemples : `feat(liste): duplique la liste de la semaine précédente`, `data(ca
 1. Créez une branche depuis `main` : `feat/historique-listes`, `data/codes-barres-cremerie`…
 2. Faites des commits petits et cohérents.
 3. Ouvrez une pull request en remplissant la liste de vérifications.
-4. Toute règle métier nouvelle ou modifiée (calcul de prix, équivalence, total, panier optimal) doit être couverte par un test.
+4. Toute règle métier nouvelle ou modifiée (calcul de prix, choix des références, total, panier optimal) doit être couverte par un test.
 
 ## Ajouter un produit au catalogue
 
-Le catalogue se trouve dans `src/data/products.json`, un produit par ligne.
+Le catalogue se trouve dans `src/data/products.json`, une fiche par ligne. Une fiche décrit un produit sans marque (« Lait demi-écrémé UHT, 1 L ») ; ses références indiquent quoi prendre dans chaque enseigne.
 
-1. **Vérifiez que le produit est courant** et vendu dans au moins une des enseignes gérées. Un produit que vous êtes seul à acheter a sa place dans vos produits personnalisés, pas dans le catalogue.
-2. **Rattachez-le à un groupe d'équivalence** de `src/data/equivalenceGroups.json`, ou créez-en un (voir plus bas).
-3. **Construisez l'identifiant** à partir du groupe, de la marque et du format, en minuscules, sans accents : `beurre-doux-president-250g`.
-4. **Renseignez le format** : `{ "count": 6, "size": 1000, "unit": "ml" }` pour un pack de 6 × 1 L. Les unités sont `g`, `ml` ou `piece`.
-5. **Pour une marque de distributeur**, indiquez son enseigne dans `enseignes` et mettez `brandType` à `distributeur`. Pour une marque nationale ou du vrac, laissez `enseignes` vide.
-6. **Le code-barres (`ean`)** : ne le remplissez que si vous l'avez lu sur l'emballage ou sur une fiche Open Food Facts dont la photo correspond bien au produit, dans ce format. En cas de doute, laissez `""`. Un code faux rattacherait au produit les prix d'un autre.
-7. Lancez `npm test` : le test du catalogue signale les doublons, les clés de contrôle fausses et les incohérences de format.
+1. **Vérifiez que le produit est courant** et respecte les règles halal ci-dessous. Un produit que vous êtes seul à acheter a sa place dans vos produits personnalisés, pas dans le catalogue.
+2. **Vérifiez qu'il n'a pas déjà sa fiche** : une fiche par produit et par usage. Le lait entier et le lait demi-écrémé ont deux fiches ; deux marques du même lait n'en ont qu'une.
+3. **Construisez l'identifiant** à partir du nom, en minuscules, sans accents : `beurre-doux`.
+4. **Renseignez le format courant** : `{ "count": 1, "size": 250, "unit": "g" }`. Les unités sont `g`, `ml` ou `piece` ; pour le vrac, `soldByWeight: true` et 1 kg.
+5. **Ajoutez les références** que vous connaissez (voir la section suivante).
+6. Lancez `npm test` : le test du catalogue signale les doublons, les clés de contrôle fausses, les formats incohérents et les produits non halal.
 
 **Ne copiez pas de données depuis les sites des enseignes.** Leurs conditions d'utilisation l'interdisent généralement et leurs bases de données sont protégées. Les emballages, Open Food Facts et Open Prices sont les bonnes sources.
 
-## Créer ou corriger un groupe d'équivalence
+## Choisir la référence d'une enseigne
 
-Un groupe réunit des produits **interchangeables pour un usage courant**, qu'on accepterait l'un pour l'autre quand on choisit « Peu importe la marque ».
-
-- Oui : tous les laits demi-écrémés UHT, quelle que soit la marque ou la taille du pack.
-- Non : un lait bio et un lait conventionnel (deux groupes), des spaghetti et des spaghetti complets, du beurre doux et du beurre demi-sel.
-- Tous les produits d'un groupe partagent le même rayon et la même unité de comparaison (`kg`, `L` ou `piece`), déclarés dans le groupe :
+Chaque fiche a **au plus une référence par enseigne : sa gamme la moins chère** pour ce produit, en général le premier prix (Simpl chez Carrefour, Eco+ chez E.Leclerc) ou la marque de l'enseigne (Carrefour Classic', Marque Repère, les marques Lidl).
 
 ```json
-{
-  "id": "lait-demi-ecreme",
-  "label": "Lait demi-écrémé UHT",
-  "categoryId": "cremerie",
-  "refUnit": "L"
-}
+{ "enseigne": "lidl", "brand": "Milbona", "ean": "" }
 ```
 
-L'identifiant du groupe ne contient pas de format : la comparaison entre tailles différentes est calculée automatiquement.
+- `brand` : la marque telle qu'elle est imprimée sur l'emballage.
+- `ean` : ne le remplissez que si vous l'avez lu sur l'emballage ou sur une fiche Open Food Facts dont la photo correspond bien au produit, dans ce format. En cas de doute, laissez `""` : un code faux rattacherait à la fiche les prix d'un autre produit.
+- `pack` : seulement si le format diffère de celui de la fiche (des couches par 48 au lieu de 44), pour que le prix soit ramené à l'unité.
+- Si un relevé de prix montre qu'une autre gamme de l'enseigne est moins chère, remplacez la référence plutôt que d'en ajouter une seconde.
+
+## Règles halal
+
+Le catalogue partagé est halal. Une fiche est refusée par les tests si son nom évoque :
+
+- le porc et ses dérivés (lardons, rillettes, chipolatas, gélatine) ;
+- une boisson alcoolisée (bière, vin, cidre, spiritueux) ;
+- une viande ou une volaille non certifiée halal : toute fiche des rayons Boucherie et Volaille, et toute fiche qui contient de la viande, doit avoir `"halal": true`.
+
+Le jambon et le saucisson ne sont acceptés que certifiés halal (jambon de dinde halal, par exemple). Les fromages, poissons et fruits de mer sont acceptés. Pour les cas que le nom ne permet pas de trancher (arômes, additifs, alcool de cuisson), vérifiez la liste d'ingrédients et les labels sur Open Food Facts avant de proposer la fiche.
 
 ## Ajouter une enseigne
 

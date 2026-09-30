@@ -1,0 +1,49 @@
+name: Corriger une fiche ou une référence
+description: La marque indiquée pour une enseigne n'est pas la moins chère, le format est faux, ou un produit n'est pas halal.
+title: '[Fiche] '
+labels: ['catalogue']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Chaque fiche du catalogue indique, pour chaque enseigne, sa gamme la moins chère pour ce produit (par exemple « Chez Lidl : Milbona »).
+        Le catalogue est halal : ni porc, ni alcool, ni gélatine de porc, viande et volaille certifiées halal.
+  - type: dropdown
+    id: probleme
+    attributes:
+      label: Type de problème
+      options:
+        - Ce produit n'est pas halal
+        - Une autre marque est moins chère dans cette enseigne
+        - La référence n'existe pas ou plus dans cette enseigne
+        - Le format ou le code-barres est faux
+        - Il manque la référence d'une enseigne
+        - Autre
+    validations:
+      required: true
+  - type: input
+    id: fiche
+    attributes:
+      label: Fiche concernée
+      placeholder: Lait demi-écrémé UHT
+    validations:
+      required: true
+  - type: dropdown
+    id: enseigne
+    attributes:
+      label: Enseigne concernée
+      options:
+        - Carrefour
+        - Lidl
+        - E.Leclerc
+        - H Market
+        - Marka Market
+        - Toutes
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Votre proposition
+      description: La bonne marque, le bon format, le code-barres, ou la raison pour laquelle le produit n'est pas halal (ingrédient, absence de certification…).
+      placeholder: Chez E.Leclerc, le lait Eco+ 1 L est moins cher que Marque Repère (0,89 € contre 0,99 € le 28/09/2026).
+    validations:
+      required: true

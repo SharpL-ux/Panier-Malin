@@ -7,22 +7,20 @@ Application web libre, sans compte ni serveur : tout reste dans votre navigateur
 > **État du projet : étape 1 sur 6 terminée (catalogue).** Les prix Open Prices, le comparateur, le panier optimal et l'export PDF arrivent dans les étapes suivantes, décrites dans la [feuille de route](#feuille-de-route).
 
 <p>
-  <img src="docs/captures/catalogue-mobile.png" width="260" alt="Catalogue sur mobile : rayon Fromages, cartes produit avec étiquette de prix et bouton Ajouter">
+  <img src="docs/captures/catalogue-mobile.png" width="260" alt="Catalogue sur mobile : rayon Volaille, fiches certifiées halal, magasin Carrefour choisi">
   <img src="docs/captures/liste-mode-sombre.png" width="260" alt="Liste de la semaine en mode sombre, classée par rayon">
 </p>
-<img src="docs/captures/catalogue-ordinateur.png" width="800" alt="Catalogue sur ordinateur : colonne des rayons à gauche, recherche, filtres et grille de produits">
+<img src="docs/captures/catalogue-ordinateur.png" width="800" alt="Catalogue sur ordinateur : rayon Crèmerie, chaque fiche indique la marque à prendre chez Lidl">
 
 ## Ce que fait l'application aujourd'hui
 
-- **Catalogue de 711 produits courants** répartis dans 24 rayons, présentés dans l'ordre de passage en magasin : marques nationales, vrac et marques de distributeur de Carrefour, Lidl et E.Leclerc.
-- **Recherche instantanée**, insensible aux accents et aux majuscules, par nom, marque ou type de produit.
-- **Filtres** : rayon, magasin, bio, marques de distributeur. Le choix « Mon magasin », en haut de l'écran, ne montre que les produits vendus dans l'enseigne choisie.
-- **Deux façons d'ajouter un produit** : le produit précis (« ce lait Lactel ») ou « Peu importe la marque » (« du lait demi-écrémé »), que le comparateur pourra remplacer par l'équivalent le moins cher.
-- **Produits personnalisés** : saisissez un code-barres, l'application récupère le nom, la marque, la photo et le format sur Open Food Facts.
+- **Catalogue halal de 195 produits courants**, rangés dans 22 rayons présentés dans l'ordre de passage en magasin. Ni porc, ni alcool, ni gélatine de porc ; la viande et la volaille sont certifiées halal.
+- **Une fiche par produit** : vous ajoutez « Bananes » ou « Lait demi-écrémé UHT, 1 L », sans choisir de marque. Derrière chaque fiche, l'application connaît la gamme la moins chère de chaque enseigne (premier prix ou marque de l'enseigne), que le comparateur utilisera.
+- **Recherche instantanée**, insensible aux accents et aux majuscules, par nom de produit ou par marque.
+- **« Mon magasin »**, en haut de l'écran : chaque fiche indique alors quoi prendre en rayon dans cette enseigne (« Chez Lidl : Milbona »).
+- **Produits personnalisés** : pour un produit précis, saisissez son code-barres ; l'application récupère le nom, la marque, la photo et le format sur Open Food Facts.
 - **Liste de la semaine** classée par rayon, avec quantités à la pièce ou au poids.
 - Mode sombre, affichage adapté au téléphone, navigation complète au clavier et au lecteur d'écran.
-
-Les prix ne sont pas encore branchés : chaque carte affiche « Prix non disponible », et aucun prix n'est inventé.
 
 ## Feuille de route
 
@@ -65,7 +63,7 @@ L'application s'ouvre sur http://localhost:5173.
 ```
 src/
 ├── components/     composants d'interface (catalog, layout, providers, ui)
-├── data/           catalogue (products.json, equivalenceGroups.json), rayons, enseignes
+├── data/           catalogue (products.json), rayons, enseignes
 ├── hooks/          contextes React et état persistant
 ├── pages/          écrans : catalogue, liste
 ├── services/       logique métier pure et accès aux API, chacun avec ses tests
@@ -78,46 +76,53 @@ La logique métier (filtres, liste, calculs de prix, comparaison) vit dans `src/
 
 ## Le catalogue
 
-Le catalogue est un simple fichier, [`src/data/products.json`](src/data/products.json), modifiable par tous. Un produit ressemble à ceci :
+Le catalogue est un simple fichier, [`src/data/products.json`](src/data/products.json), modifiable par tous. Chaque ligne est une fiche produit :
 
 ```json
 {
-  "id": "lait-demi-ecreme-milbona-6x1l",
+  "id": "lait-demi-ecreme-uht",
   "name": "Lait demi-écrémé UHT",
-  "brand": "Milbona",
-  "brandType": "distributeur",
-  "enseignes": ["lidl"],
   "categoryId": "cremerie",
   "icon": "🥛",
-  "ean": "",
-  "pack": { "count": 6, "size": 1000, "unit": "ml" },
+  "pack": { "count": 1, "size": 1000, "unit": "ml" },
   "soldByWeight": false,
-  "equivalenceGroup": "lait-demi-ecreme",
-  "flags": { "bio": false, "halal": false }
+  "halal": false,
+  "references": [
+    { "enseigne": "carrefour", "brand": "Simpl", "ean": "" },
+    { "enseigne": "lidl", "brand": "Milbona", "ean": "" },
+    { "enseigne": "leclerc", "brand": "Eco+", "ean": "" }
+  ]
 }
 ```
 
-| Champ              | Signification                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| `id`               | Identifiant stable et lisible : groupe, marque, format                               |
-| `brandType`        | `nationale`, `distributeur` ou `sans-marque`                                         |
-| `enseignes`        | Enseignes qui vendent le produit ; liste vide pour un produit vendu partout          |
-| `ean`              | Code-barres EAN-8 ou EAN-13 ; chaîne vide tant qu'il n'a pas été vérifié             |
-| `pack`             | Conditionnement : `count` × `size` `unit` (`g`, `ml` ou `piece`)                     |
-| `soldByWeight`     | Vendu au poids : la quantité de la liste est exprimée en kg                          |
-| `equivalenceGroup` | Groupe des produits interchangeables, défini dans `equivalenceGroups.json`           |
-| `offCategoryTag`   | Pour le vrac : catégorie Open Food Facts utilisée par les prix au kilo d'Open Prices |
+| Champ               | Signification                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| `id`                | Identifiant stable et lisible, tiré du nom                                           |
+| `pack`              | Format courant : `count` × `size` `unit` (`g`, `ml` ou `piece`) ; 1 kg pour le vrac  |
+| `soldByWeight`      | Vendu au poids : la quantité de la liste est exprimée en kg                          |
+| `halal`             | Viande, volaille ou charcuterie certifiée halal                                      |
+| `references`        | Pour chaque enseigne, au plus une référence : sa gamme la moins chère connue         |
+| `references[].ean`  | Code-barres EAN-8 ou EAN-13 ; chaîne vide tant qu'il n'a pas été vérifié             |
+| `references[].pack` | Format de la référence, s'il diffère de celui de la fiche (couches par 44 ou par 48) |
+| `offCategoryTag`    | Pour le vrac : catégorie Open Food Facts utilisée par les prix au kilo d'Open Prices |
 
-Quelques règles, vérifiées automatiquement par les tests à chaque modification :
+Une fiche sans référence est normale pour le vrac (fruits, légumes, pain) et pour la viande halal, dont les références restent à trouver : son prix viendra des relevés au kilo d'Open Prices ou de vos propres saisies.
 
-- **Un code-barres n'est jamais inventé.** Tous les codes du catalogue initial sont vides : une étape dédiée proposera des codes issus d'Open Prices, relus par une personne avant d'être ajoutés. La clé de contrôle de chaque code saisi est vérifiée.
-- Une marque de distributeur indique toujours son enseigne ; une marque nationale n'en indique aucune.
-- Le format d'un produit doit correspondre à l'unité de comparaison de son groupe (kg, L ou pièce).
-- Les formats du catalogue initial sont des formats courants, pas des relevés : ils peuvent différer légèrement du produit en rayon.
+### Un catalogue halal
 
-Les enseignes H Market et Marka Market sont gérées avec les marques nationales du catalogue ; leurs marques propres pourront être ajoutées par des contributeurs qui les connaissent.
+Le catalogue partagé ne contient ni porc ni dérivés, aucune boisson alcoolisée, aucun produit à base de gélatine, et uniquement de la viande, de la volaille et de la charcuterie certifiées halal. Poissons, fruits de mer et fromages sont conservés. Ces règles sont vérifiées automatiquement par les tests à chaque modification du catalogue ; elles ne s'appliquent pas aux produits personnalisés, qui restent sur votre appareil.
 
-Pour ajouter un produit, une équivalence ou une enseigne, suivez le [guide de contribution](CONTRIBUTING.md) ou ouvrez un ticket avec le modèle correspondant.
+Les cas limites (arômes, additifs d'origine animale, alcool utilisé en cuisine) ne peuvent pas être détectés à partir du seul nom d'un produit : ils seront contrôlés avec les ingrédients et les labels d'Open Food Facts quand les codes-barres seront renseignés. La sauce soja, qui contient souvent de l'alcool de fermentation, a été écartée par prudence.
+
+### La référence la moins chère de chaque enseigne
+
+Tant que les prix réels ne sont pas chargés, « la moins chère » repose sur les gammes des enseignes : Simpl quand le produit existe dans cette gamme, sinon Carrefour Classic' chez Carrefour ; les marques propres de Lidl ; Eco+ quand le produit existe dans cette gamme, sinon Marque Repère chez E.Leclerc. Les marques nationales et le bio ne sont pas retenus. Ces choix seront vérifiés avec les prix d'Open Prices et corrigés au besoin.
+
+H Market et Marka Market sont gérées sans référence : je ne connais pas leurs marques propres. Leurs prix viendront de vos saisies, ou de contributeurs qui connaissent ces magasins.
+
+Autres règles vérifiées par les tests : **un code-barres n'est jamais inventé** (tous sont vides dans le catalogue initial, et la clé de contrôle de chaque code saisi est vérifiée), une seule référence par enseigne et par fiche, et des formats comparables entre une fiche et ses références. Les formats du catalogue initial sont des formats courants, pas des relevés : ils peuvent différer légèrement du produit en rayon.
+
+Pour ajouter une fiche ou corriger une référence, suivez le [guide de contribution](CONTRIBUTING.md) ou ouvrez un ticket avec le modèle correspondant.
 
 ## Données Open Prices et Open Food Facts
 
@@ -143,7 +148,7 @@ Vous pouvez enrichir ces bases vous-même sur [Open Prices](https://prices.openf
 Les règles ci-dessous ont été arrêtées avant l'implémentation ; elles seront codées dans `src/services/pricing.ts` et `src/services/comparator.ts`, avec leurs tests.
 
 - **Calculs en centimes entiers**, jamais en nombres à virgule, pour que les totaux tombent juste.
-- **Formats différents** : chaque prix est ramené au kilo, au litre ou à la pièce. Pour un article « peu importe la marque », le coût retenu est celui du conditionnement le moins cher couvrant le besoin : pour 3 L de lait, trois bouteilles de 1 L ou un pack de 6 L, selon ce qui revient le moins cher.
+- **Un prix par fiche et par magasin** : celui de la référence de l'enseigne, ou le prix au kilo du vrac. Quand le format de la référence diffère de celui de la fiche (couches par 44 ou par 48), le prix est ramené à l'unité, au kilo ou au litre avant d'être comparé.
 - **Choix du prix** : votre saisie manuelle passe d'abord ; puis le relevé le plus récent du magasin ; à défaut, un relevé d'un autre magasin de la même enseigne, signalé comme tel (option désactivable). Les prix promotionnels sont écartés, sauf si le prix hors promotion est connu.
 - **Deux modes de total** : « Articles communs » compare les magasins sur les seuls articles dont le prix est connu partout ; « Estimation complète » inclut tout ce qui est connu et affiche le taux de couverture.
 - **Panier optimal** : toutes les combinaisons de 1 à 3 magasins sont évaluées (175 combinaisons pour 10 magasins). La combinaison retenue couvre le plus d'articles, puis coûte le moins cher, chaque magasin supplémentaire devant faire économiser au moins le seuil choisi (par exemple 3 €). Les articles sans prix sont signalés « à vérifier ».
