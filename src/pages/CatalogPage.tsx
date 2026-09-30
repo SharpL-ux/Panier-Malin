@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { CatalogToolbar } from '../components/catalog/CatalogToolbar';
 import { CategoryNav } from '../components/catalog/CategoryNav';
 import { CustomProductDialog } from '../components/catalog/CustomProductDialog';
@@ -6,6 +6,7 @@ import { ProductGrid } from '../components/catalog/ProductGrid';
 import { getCategory } from '../data/categories';
 import { getEnseigne } from '../data/enseignes';
 import { useCatalog, useSettings } from '../hooks/useAppContexts';
+import type { CategoryId } from '../types/catalog';
 import {
   countByCategory,
   DEFAULT_FILTERS,
@@ -21,6 +22,7 @@ export function CatalogPage() {
   const [filters, setFilters] = useState<CatalogFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<CatalogSort>('nom');
   const [dialog, setDialog] = useState<{ open: boolean; name?: string }>({ open: false });
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   const query = useDeferredValue(filters.query);
   const effective = useMemo(() => ({ ...filters, query, enseigne }), [filters, query, enseigne]);
@@ -43,23 +45,33 @@ export function CatalogPage() {
   const where = enseigne === 'all' ? '' : ` chez ${getEnseigne(enseigne).label}`;
   const gridKey = JSON.stringify([effective, sort]);
 
+  function selectCategory(categoryId: CategoryId | 'all') {
+    setFilters((f) => ({ ...f, categoryId }));
+    // Après un défilement, on revient en haut des résultats du nouveau rayon.
+    const title = titleRef.current;
+    if (title && title.getBoundingClientRect().top < 140)
+      title.scrollIntoView?.({ block: 'start' });
+  }
+
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-4 pb-28 lg:grid lg:grid-cols-[15rem_1fr] lg:gap-8 lg:pb-12">
-      <aside className="lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto">
+    <div className="mx-auto max-w-7xl px-4 pb-28 lg:grid lg:grid-cols-[17rem_1fr] lg:gap-8 lg:pt-6 lg:pb-12">
+      <aside className="max-lg:sticky max-lg:top-[calc(4rem_+_env(safe-area-inset-top))] max-lg:z-20 max-lg:-mx-4 max-lg:border-b max-lg:border-line max-lg:bg-paper max-lg:px-4 max-lg:py-2 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto">
         <h2 className="mb-2 hidden font-display text-xl font-bold lg:block">Rayons</h2>
-        <div className="max-lg:sticky max-lg:top-16 max-lg:z-20 max-lg:-mx-4 max-lg:border-b max-lg:border-line max-lg:bg-paper max-lg:px-4 max-lg:py-2">
-          <CategoryNav
-            selected={filters.categoryId}
-            counts={counts}
-            total={acrossCategories.length}
-            onSelect={(categoryId) => setFilters((f) => ({ ...f, categoryId }))}
-          />
-        </div>
+        <CategoryNav
+          selected={filters.categoryId}
+          counts={counts}
+          total={acrossCategories.length}
+          onSelect={selectCategory}
+        />
       </aside>
 
       <section aria-labelledby="catalogue-titre" className="mt-3 space-y-4 lg:mt-0">
         <div className="flex items-baseline justify-between gap-4">
-          <h1 id="catalogue-titre" className="font-display text-3xl leading-tight font-bold">
+          <h1
+            ref={titleRef}
+            id="catalogue-titre"
+            className="scroll-mt-36 font-display text-2xl leading-tight font-bold lg:scroll-mt-24 lg:text-3xl"
+          >
             {heading}
           </h1>
           <p className="shrink-0 text-sm text-ink-soft tabular" aria-live="polite">

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { CATEGORIES } from '../../data/categories';
 import type { CategoryId } from '../../types/catalog';
 
@@ -14,6 +14,11 @@ interface Props {
  * Les compteurs tiennent compte de la recherche et des filtres en cours.
  */
 export function CategoryNav({ selected, counts, total, onSelect }: Props) {
+  const activeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    // Sur mobile, l'onglet choisi peut être hors du bandeau défilant.
+    activeRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }, [selected]);
   const items: {
     id: CategoryId | 'all';
     label: string;
@@ -39,11 +44,12 @@ export function CategoryNav({ selected, counts, total, onSelect }: Props) {
             <li key={item.id} className="shrink-0">
               <button
                 type="button"
+                ref={active ? activeRef : undefined}
                 aria-pressed={active}
                 onClick={() => onSelect(item.id)}
                 style={{ '--cat': item.color } as CSSProperties}
                 className={[
-                  'flex w-full items-center gap-2 rounded-full border px-3 py-2 text-left text-sm whitespace-nowrap',
+                  'flex w-full items-center gap-2 rounded-full border px-3 py-2 text-left text-sm whitespace-nowrap lg:whitespace-normal',
                   'lg:cat-strip lg:rounded-md lg:border-transparent lg:py-1.5 lg:pl-4',
                   active
                     ? 'cat-tint border-[var(--cat)] font-semibold'
@@ -54,7 +60,7 @@ export function CategoryNav({ selected, counts, total, onSelect }: Props) {
                 <span aria-hidden className="text-base">
                   {item.icon}
                 </span>
-                <span className="lg:flex-1 lg:truncate">{item.label}</span>
+                <span className="lg:flex-1 lg:leading-tight">{item.label}</span>
                 <span className="hidden text-xs text-ink-soft tabular lg:inline">
                   {item.count}
                   <span className="sr-only"> produits</span>
