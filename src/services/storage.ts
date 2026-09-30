@@ -1,3 +1,5 @@
+import { MIGRATIONS } from './migrations';
+
 /**
  * Persistance locale versionnée. Chaque valeur est enveloppée avec un numéro de schéma
  * pour pouvoir migrer les données des utilisateurs quand le modèle évolue.
@@ -6,17 +8,12 @@
  */
 
 export const STORAGE_PREFIX = 'panier-malin:';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 interface Envelope<T> {
   v: number;
   data: T;
 }
-
-type Migration = (data: unknown) => unknown;
-
-/** Migrations par clé : MIGRATIONS[clé][n] transforme la version n en version n + 1. */
-const MIGRATIONS: Record<string, Record<number, Migration>> = {};
 
 function storage(): Storage | null {
   try {

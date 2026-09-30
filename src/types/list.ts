@@ -1,20 +1,14 @@
 import type { CategoryId } from './catalog';
 
-/** Un article vise soit un produit précis (marque imposée), soit n'importe quel produit d'un groupe. */
-export type ListItemTarget =
-  { kind: 'produit'; productId: string } | { kind: 'generique'; groupId: string };
-
 export interface ListItem {
   id: string;
-  target: ListItemTarget;
-  /**
-   * Produit précis : nombre de conditionnements (ou kg si vendu au poids).
-   * Générique : besoin exprimé dans l'unité de référence du groupe (2 → 2 L).
-   */
+  /** Fiche produit du catalogue (ou produit personnalisé). */
+  productId: string;
+  /** Nombre de conditionnements de la fiche, ou kg pour un produit vendu au poids. */
   quantity: number;
-  /** Pas du sélecteur +/- (pour un générique : le format du produit d'origine, ex. 1 L). */
+  /** Pas du sélecteur +/- : 1 conditionnement, ou 0,5 kg au poids. */
   step: number;
-  /** Catégorie mémorisée pour regrouper la liste par rayon. */
+  /** Rayon mémorisé pour regrouper la liste. */
   categoryId: CategoryId;
   note?: string;
   checked: boolean;

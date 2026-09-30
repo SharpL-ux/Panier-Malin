@@ -73,7 +73,7 @@ export function CatalogToolbar({
             type="search"
             value={filters.query}
             onChange={(e) => onChange({ query: e.target.value })}
-            placeholder="Lait, pâtes, lessive, Lactel…"
+            placeholder="Lait, pâtes, bananes, lessive…"
             autoComplete="off"
             enterKeyHint="search"
             className="h-12 w-full rounded-full border border-line-strong bg-surface pr-11 pl-10 text-base placeholder:text-ink-soft [&::-webkit-search-cancel-button]:hidden"
@@ -100,15 +100,6 @@ export function CatalogToolbar({
       </div>
       {/* Sur mobile, filtres et tri tiennent sur une seule ligne défilante pour laisser la place aux produits. */}
       <div className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
-        <Toggle pressed={filters.bioOnly} onClick={() => onChange({ bioOnly: !filters.bioOnly })}>
-          Bio
-        </Toggle>
-        <Toggle
-          pressed={filters.distributeurOnly}
-          onClick={() => onChange({ distributeurOnly: !filters.distributeurOnly })}
-        >
-          Marques de distributeur
-        </Toggle>
         <Toggle
           pressed={filters.knownPriceOnly}
           disabled={!pricesAvailable}

@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import type { Catalog } from '../services/catalog';
-import type { EnseigneId, EquivalenceGroup, Product } from '../types/catalog';
+import type { EnseigneId, Product } from '../types/catalog';
 import type { ShoppingList } from '../types/list';
 
 export type Theme = 'light' | 'dark';
@@ -15,13 +15,12 @@ export interface SettingsValue {
 
 export interface CatalogValue {
   catalog: Catalog;
-  addCustomProduct: (product: Product, group?: EquivalenceGroup) => void;
+  addCustomProduct: (product: Product) => void;
 }
 
 export interface ShoppingListValue {
   list: ShoppingList;
   addProduct: (product: Product) => void;
-  addGeneric: (product: Product) => void;
   changeQuantity: (itemId: string, steps: number) => void;
   removeItem: (itemId: string) => void;
 }

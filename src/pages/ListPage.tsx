@@ -1,44 +1,41 @@
 import { Link } from 'react-router';
 import { QuantityStepper } from '../components/ui/QuantityStepper';
 import { CATEGORIES } from '../data/categories';
-import { useCatalog, useShoppingList } from '../hooks/useAppContexts';
+import { getEnseigne } from '../data/enseignes';
+import { useCatalog, useSettings, useShoppingList } from '../hooks/useAppContexts';
+import { referenceAt } from '../services/catalog';
 import type { ListItem } from '../types/list';
-import { productQuantityLabel } from '../utils/productLabels';
-import { formatPack, formatRefQuantity } from '../utils/units';
+import { packLabel, productQuantityLabel } from '../utils/productLabels';
 
 /**
- * Version minimale de la liste (étape 1) : articles regroupés par rayon, quantités et suppression.
+ * Version minimale de la liste (étape 1) : articles regroupés par rayon, avec leurs quantités.
  * L'étape 2 ajoutera le nom modifiable, les notes, les cases à cocher, l'historique et les favoris.
  */
 export function ListPage() {
   const { list, changeQuantity } = useShoppingList();
   const { catalog } = useCatalog();
+  const { enseigne } = useSettings();
 
   const describe = (item: ListItem) => {
-    if (item.target.kind === 'produit') {
-      const product = catalog.productById.get(item.target.productId);
-      if (!product)
-        return {
-          title: 'Produit introuvable',
-          detail: 'Il a peut-être été retiré du catalogue.',
-          icon: '❔',
-          qty: String(item.quantity),
-        };
+    const product = catalog.productById.get(item.productId);
+    if (!product) {
       return {
-        title: product.name,
-        detail: product.soldByWeight
-          ? `${product.brand}, au poids`
-          : `${product.brand}, ${formatPack(product.pack)}`,
-        icon: product.icon,
-        qty: productQuantityLabel(product, item.quantity),
+        title: 'Produit introuvable',
+        detail: 'Il a peut-être été retiré du catalogue.',
+        icon: '❔',
+        qty: String(item.quantity),
       };
     }
-    const group = catalog.groupById.get(item.target.groupId);
+    const reference = enseigne === 'all' ? undefined : referenceAt(product, enseigne);
+    const where = reference
+      ? `, ${reference.brand} chez ${getEnseigne(reference.enseigne).label}`
+      : '';
+    const brand = product.brand ? `${product.brand}, ` : '';
     return {
-      title: group?.label ?? 'Groupe introuvable',
-      detail: 'Toutes marques',
-      icon: CATEGORIES.find((c) => c.id === item.categoryId)?.icon ?? '🛒',
-      qty: group ? formatRefQuantity(item.quantity, group.refUnit) : String(item.quantity),
+      title: product.name,
+      detail: `${brand}${packLabel(product)}${where}`,
+      icon: product.icon,
+      qty: productQuantityLabel(product, item.quantity),
     };
   };
 
@@ -86,7 +83,7 @@ export function ListPage() {
                         {d.icon}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium">{d.title}</p>
+                        <p className="font-medium">{d.title}</p>
                         <p className="text-sm text-ink-soft">{d.detail}</p>
                       </div>
                       <QuantityStepper

@@ -1,52 +1,41 @@
-import baseGroups from '../data/equivalenceGroups.json';
 import baseProducts from '../data/products.json';
-import type { CategoryId, EnseigneId, EquivalenceGroup, Product } from '../types/catalog';
-import { normalizeText, matchesQuery } from '../utils/text';
+import type { CategoryId, EnseigneId, Product, StoreReference } from '../types/catalog';
+import { matchesQuery, normalizeText } from '../utils/text';
 import { refQuantity } from '../utils/units';
 
 export const BASE_PRODUCTS = baseProducts as Product[];
-export const BASE_GROUPS = baseGroups as EquivalenceGroup[];
 
 export interface Catalog {
   products: Product[];
-  groups: EquivalenceGroup[];
   productById: Map<string, Product>;
-  groupById: Map<string, EquivalenceGroup>;
 }
 
-/** Assemble le catalogue de base et les ajouts de l'utilisateur. Les ajouts ne remplacent jamais un produit de base. */
+/** Assemble le catalogue de base et les ajouts de l'utilisateur. Un ajout ne remplace jamais une fiche de base. */
 export function buildCatalog(
   customProducts: Product[] = [],
-  customGroups: EquivalenceGroup[] = [],
-  base: { products: Product[]; groups: EquivalenceGroup[] } = {
-    products: BASE_PRODUCTS,
-    groups: BASE_GROUPS,
-  },
+  base: Product[] = BASE_PRODUCTS,
 ): Catalog {
-  const productById = new Map(base.products.map((p) => [p.id, p]));
-  for (const product of customProducts)
+  const productById = new Map(base.map((p) => [p.id, p]));
+  for (const product of customProducts) {
     if (!productById.has(product.id)) productById.set(product.id, product);
-  const groupById = new Map(base.groups.map((g) => [g.id, g]));
-  for (const group of customGroups) if (!groupById.has(group.id)) groupById.set(group.id, group);
-  return {
-    products: [...productById.values()],
-    groups: [...groupById.values()],
-    productById,
-    groupById,
-  };
+  }
+  return { products: [...productById.values()], productById };
 }
 
-/** Un produit est vendu dans une enseigne s'il y est référencé, ou s'il est vendu partout. */
-export function isSoldAt(product: Product, enseigne: EnseigneId): boolean {
-  return product.enseignes.length === 0 || product.enseignes.includes(enseigne);
+/** Référence à prendre en rayon dans une enseigne, si elle est connue. */
+export function referenceAt(product: Product, enseigne: EnseigneId): StoreReference | undefined {
+  return product.references.find((r) => r.enseigne === enseigne);
 }
 
 const haystacks = new WeakMap<Product, string>();
 
-function haystackOf(product: Product, group?: EquivalenceGroup): string {
+/** Texte de recherche : nom de la fiche et marques connues (« milbona » retrouve le lait). */
+function haystackOf(product: Product): string {
   let value = haystacks.get(product);
   if (value === undefined) {
-    value = normalizeText([product.name, product.brand, group?.label ?? ''].join(' '));
+    value = normalizeText(
+      [product.name, product.brand ?? '', ...product.references.map((r) => r.brand)].join(' '),
+    );
     haystacks.set(product, value);
   }
   return value;
@@ -55,23 +44,17 @@ function haystackOf(product: Product, group?: EquivalenceGroup): string {
 export interface CatalogFilters {
   query: string;
   categoryId: CategoryId | 'all';
-  enseigne: EnseigneId | 'all';
-  bioOnly: boolean;
-  distributeurOnly: boolean;
   knownPriceOnly: boolean;
 }
 
 export const DEFAULT_FILTERS: CatalogFilters = {
   query: '',
   categoryId: 'all',
-  enseigne: 'all',
-  bioOnly: false,
-  distributeurOnly: false,
   knownPriceOnly: false,
 };
 
 export interface PriceLookup {
-  /** Prix du conditionnement en centimes, ou null s'il est inconnu. */
+  /** Prix du conditionnement de la fiche en centimes, ou null s'il est inconnu. */
   priceOf: (product: Product) => number | null;
 }
 
@@ -92,16 +75,8 @@ export function filterProducts(
     ) {
       return false;
     }
-    if (filters.enseigne !== 'all' && !isSoldAt(product, filters.enseigne)) return false;
-    if (filters.bioOnly && !product.flags.bio) return false;
-    if (filters.distributeurOnly && product.brandType !== 'distributeur') return false;
     if (filters.knownPriceOnly && prices.priceOf(product) === null) return false;
-    if (
-      query &&
-      !matchesQuery(haystackOf(product, catalog.groupById.get(product.equivalenceGroup)), query)
-    ) {
-      return false;
-    }
+    if (query && !matchesQuery(haystackOf(product), query)) return false;
     return true;
   });
 }
@@ -110,16 +85,14 @@ export type CatalogSort = 'nom' | 'prix' | 'prix-unitaire';
 
 const collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
 
-/** Trie sans modifier le tableau d'origine. Les produits sans prix connu passent en dernier. */
+/** Trie sans modifier le tableau d'origine. Les fiches sans prix connu passent en dernier. */
 export function sortProducts(
   products: Product[],
   sort: CatalogSort,
   prices: PriceLookup = NO_PRICES,
 ): Product[] {
   const byName = (a: Product, b: Product) =>
-    collator.compare(a.name, b.name) ||
-    collator.compare(a.brand, b.brand) ||
-    refQuantity(a.pack) - refQuantity(b.pack);
+    collator.compare(a.name, b.name) || a.id.localeCompare(b.id);
   if (sort === 'nom') return [...products].sort(byName);
   const value = (p: Product): number | null => {
     const price = prices.priceOf(p);

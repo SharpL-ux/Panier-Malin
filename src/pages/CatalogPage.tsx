@@ -4,8 +4,7 @@ import { CategoryNav } from '../components/catalog/CategoryNav';
 import { CustomProductDialog } from '../components/catalog/CustomProductDialog';
 import { ProductGrid } from '../components/catalog/ProductGrid';
 import { getCategory } from '../data/categories';
-import { getEnseigne } from '../data/enseignes';
-import { useCatalog, useSettings } from '../hooks/useAppContexts';
+import { useCatalog } from '../hooks/useAppContexts';
 import type { CategoryId } from '../types/catalog';
 import {
   countByCategory,
@@ -18,14 +17,13 @@ import {
 
 export function CatalogPage() {
   const { catalog } = useCatalog();
-  const { enseigne } = useSettings();
   const [filters, setFilters] = useState<CatalogFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<CatalogSort>('nom');
   const [dialog, setDialog] = useState<{ open: boolean; name?: string }>({ open: false });
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   const query = useDeferredValue(filters.query);
-  const effective = useMemo(() => ({ ...filters, query, enseigne }), [filters, query, enseigne]);
+  const effective = useMemo(() => ({ ...filters, query }), [filters, query]);
 
   const acrossCategories = useMemo(
     () => filterProducts(catalog, effective, undefined, { ignoreCategory: true }),
@@ -42,7 +40,6 @@ export function CatalogPage() {
 
   const heading =
     filters.categoryId === 'all' ? 'Tous les rayons' : getCategory(filters.categoryId).label;
-  const where = enseigne === 'all' ? '' : ` chez ${getEnseigne(enseigne).label}`;
   const gridKey = JSON.stringify([effective, sort]);
 
   function selectCategory(categoryId: CategoryId | 'all') {
@@ -76,7 +73,6 @@ export function CatalogPage() {
           </h1>
           <p className="shrink-0 text-sm text-ink-soft tabular" aria-live="polite">
             {results.length} {results.length > 1 ? 'produits' : 'produit'}
-            {where}
           </p>
         </div>
 
@@ -95,8 +91,8 @@ export function CatalogPage() {
           <div className="rounded-md border border-dashed border-line-strong bg-surface p-6 text-center">
             <p className="font-medium">
               {filters.query
-                ? `Aucun produit ne correspond à « ${filters.query} »${where}.`
-                : `Aucun produit dans ce rayon${where}.`}
+                ? `Aucun produit ne correspond à « ${filters.query} ».`
+                : 'Aucun produit dans ce rayon.'}
             </p>
             <p className="mt-1 text-ink-soft">
               Essayez un autre mot, retirez un filtre, ou créez le produit vous-même.

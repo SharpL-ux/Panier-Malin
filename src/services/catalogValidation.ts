@@ -1,26 +1,77 @@
 import { isCategoryId } from '../data/categories';
 import { isEnseigneId } from '../data/enseignes';
-import type { EquivalenceGroup, Product } from '../types/catalog';
+import type { Pack, Product } from '../types/catalog';
 import { isValidEan } from '../utils/ean';
-import { isPackCompatible } from '../utils/units';
+import { normalizeText } from '../utils/text';
+import { refUnitOf } from '../utils/units';
+
+/**
+ * Règles halal du catalogue partagé. Elles ne s'appliquent pas aux produits
+ * personnalisés, qui restent sur l'appareil de chacun.
+ */
+const FORBIDDEN = [
+  /\bporcs?\b/,
+  /\blardons?\b/,
+  /\brillettes?\b/,
+  /\bchipolatas?\b/,
+  /\bgelatine\b/,
+  /\bbieres?\b/,
+  /\bvins?\b/,
+  /\bwhisky\b/,
+  /\bpastis\b/,
+  /\bcidres?\b/,
+  /\brhum\b/,
+  /\bvodka\b/,
+  /\bliqueurs?\b/,
+  /\balcools?\b/,
+];
+/** Autorisés seulement s'ils sont certifiés halal (jambon de dinde, saucisson de bœuf…). */
+const HALAL_ONLY = [/\bjambons?\b/, /\bsaucissons?\b/];
+/** Toute viande ou volaille du catalogue doit être certifiée halal. */
+const MEAT = /\b(poulet|dinde|volaille|boeuf|agneau|veau|mouton|merguez|chorizo|viande|steaks?)\b/;
+const MEAT_CATEGORIES = new Set(['boucherie', 'volaille']);
+
+export function checkHalalRules(product: Product): string[] {
+  const errors: string[] = [];
+  const name = normalizeText(product.name);
+  const where = `Produit ${product.id}`;
+  if (FORBIDDEN.some((re) => re.test(name)))
+    errors.push(`${where} : produit non halal (porc, alcool ou gélatine)`);
+  if (!product.halal && HALAL_ONLY.some((re) => re.test(name))) {
+    errors.push(`${where} : ce produit n'est accepté que certifié halal`);
+  }
+  const isMeat =
+    MEAT_CATEGORIES.has(product.categoryId) ||
+    (product.categoryId !== 'animaux' && MEAT.test(name));
+  if (isMeat && !product.halal) errors.push(`${where} : viande ou volaille non certifiée halal`);
+  return errors;
+}
+
+function isValidPack(pack: Pack): boolean {
+  return (
+    Number.isInteger(pack.count) &&
+    pack.count >= 1 &&
+    pack.size > 0 &&
+    ['g', 'ml', 'piece'].includes(pack.unit)
+  );
+}
 
 /**
  * Vérifie la cohérence du catalogue. Exécutée par les tests (donc par la CI) à chaque
- * modification de products.json ou equivalenceGroups.json.
+ * modification de products.json.
  */
-export function validateCatalog(products: Product[], groups: EquivalenceGroup[]): string[] {
+export function validateCatalog(products: Product[]): string[] {
   const errors: string[] = [];
-  const groupById = new Map<string, EquivalenceGroup>();
-  for (const group of groups) {
-    if (groupById.has(group.id)) errors.push(`Groupe en double : ${group.id}`);
-    groupById.set(group.id, group);
-    if (!isCategoryId(group.categoryId))
-      errors.push(`Groupe ${group.id} : catégorie inconnue ${group.categoryId}`);
-  }
-
   const ids = new Set<string>();
   const eans = new Map<string, string>();
-  const usedGroups = new Set<string>();
+
+  const checkEan = (ean: string, owner: string) => {
+    if (ean === '') return;
+    if (!isValidEan(ean)) errors.push(`${owner} : code-barres invalide (${ean})`);
+    const other = eans.get(ean);
+    if (other) errors.push(`${owner} : code-barres déjà utilisé par ${other}`);
+    eans.set(ean, owner);
+  };
 
   for (const p of products) {
     const where = `Produit ${p.id}`;
@@ -28,52 +79,34 @@ export function validateCatalog(products: Product[], groups: EquivalenceGroup[])
     if (ids.has(p.id)) errors.push(`${where} : identifiant en double`);
     ids.add(p.id);
     if (!p.name.trim()) errors.push(`${where} : nom vide`);
-    if (!isCategoryId(p.categoryId)) errors.push(`${where} : catégorie inconnue ${p.categoryId}`);
-    for (const e of p.enseignes)
-      if (!isEnseigneId(e)) errors.push(`${where} : enseigne inconnue ${e}`);
-
-    if (p.brandType === 'distributeur' && p.enseignes.length === 0) {
-      errors.push(`${where} : une marque de distributeur doit indiquer son enseigne`);
-    }
-    if (p.brandType !== 'distributeur' && p.enseignes.length > 0) {
-      errors.push(`${where} : seules les marques de distributeur sont limitées à une enseigne`);
-    }
-
-    if (p.ean !== '') {
-      if (!isValidEan(p.ean)) errors.push(`${where} : code-barres invalide (${p.ean})`);
-      const other = eans.get(p.ean);
-      if (other) errors.push(`${where} : code-barres déjà utilisé par ${other}`);
-      eans.set(p.ean, p.id);
-    }
-
-    const { count, size, unit } = p.pack;
-    if (!(Number.isInteger(count) && count >= 1 && size > 0))
-      errors.push(`${where} : conditionnement invalide`);
-    if (!['g', 'ml', 'piece'].includes(unit))
-      errors.push(`${where} : unité de conditionnement inconnue`);
-
-    const group = groupById.get(p.equivalenceGroup);
-    if (!group) {
-      errors.push(`${where} : groupe d'équivalence inconnu ${p.equivalenceGroup}`);
-    } else {
-      usedGroups.add(group.id);
-      if (group.categoryId !== p.categoryId)
-        errors.push(`${where} : catégorie différente de celle de son groupe`);
-      if (!isPackCompatible(p.pack, group.refUnit)) {
-        errors.push(
-          `${where} : conditionnement incompatible avec l'unité du groupe (${group.refUnit})`,
-        );
-      }
-    }
-
-    if (p.soldByWeight && unit !== 'g')
+    if (!isCategoryId(p.categoryId)) errors.push(`${where} : rayon inconnu ${p.categoryId}`);
+    if (!isValidPack(p.pack)) errors.push(`${where} : format invalide`);
+    if (p.soldByWeight && p.pack.unit !== 'g')
       errors.push(`${where} : un produit au poids doit être exprimé en grammes`);
     if (p.offCategoryTag !== undefined && !/^[a-z]{2}:[a-z0-9-]+$/.test(p.offCategoryTag)) {
       errors.push(`${where} : catégorie Open Food Facts mal formée (${p.offCategoryTag})`);
     }
-  }
+    if (p.brand !== undefined || p.ean !== undefined || p.custom) {
+      errors.push(
+        `${where} : marque, code-barres et « custom » sont réservés aux produits personnalisés`,
+      );
+    }
 
-  for (const group of groups)
-    if (!usedGroups.has(group.id)) errors.push(`Groupe ${group.id} : aucun produit`);
+    const seen = new Set<string>();
+    for (const ref of p.references) {
+      const owner = `${where} (${ref.enseigne})`;
+      if (!isEnseigneId(ref.enseigne)) errors.push(`${owner} : enseigne inconnue`);
+      if (seen.has(ref.enseigne)) errors.push(`${owner} : une seule référence par enseigne`);
+      seen.add(ref.enseigne);
+      if (!ref.brand.trim()) errors.push(`${owner} : marque vide`);
+      if (ref.pack && !isValidPack(ref.pack)) errors.push(`${owner} : format invalide`);
+      if (ref.pack && refUnitOf(ref.pack) !== refUnitOf(p.pack)) {
+        errors.push(`${owner} : format incomparable avec celui de la fiche`);
+      }
+      checkEan(ref.ean, owner);
+    }
+
+    errors.push(...checkHalalRules(p));
+  }
   return errors;
 }

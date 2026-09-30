@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from '../App';
+import { SCHEMA_VERSION } from '../services/storage';
 
 function setup() {
   window.location.hash = '#/';
@@ -11,18 +12,21 @@ function setup() {
 }
 
 const count = () => screen.getByText(/\d+ produits?/, { selector: 'p' }).textContent ?? '';
+const card = (name: string) =>
+  screen.getByRole('heading', { level: 3, name }).closest('article') as HTMLElement;
 
 describe('catalogue', () => {
   beforeEach(() => {
     window.location.hash = '#/';
   });
 
-  it('affiche les rayons et le catalogue complet', () => {
+  it('affiche les 22 rayons et une fiche par produit', () => {
     setup();
     const rayons = screen.getByRole('navigation', { name: 'Rayons' });
-    expect(within(rayons).getAllByRole('button')).toHaveLength(25);
+    expect(within(rayons).getAllByRole('button')).toHaveLength(23);
+    expect(within(rayons).queryByRole('button', { name: /Alcools/ })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: 'Tous les rayons' })).toBeInTheDocument();
-    expect(Number(count().split(' ')[0])).toBeGreaterThanOrEqual(400);
+    expect(Number(count().split(' ')[0])).toBeGreaterThanOrEqual(170);
     // Aucun prix n'est inventé : sans source branchée, chaque carte l'indique.
     expect(screen.getAllByText('Prix non disponible').length).toBeGreaterThan(0);
   });
@@ -35,61 +39,84 @@ describe('catalogue', () => {
     );
     expect(
       await screen.findAllByRole('heading', { level: 3, name: 'Crème fraîche épaisse' }),
-    ).toHaveLength(5);
+    ).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: /Fruits/ }));
-    expect(screen.getByText(/Aucun produit ne correspond à « creme epaisse »/)).toBeInTheDocument();
+    expect(
+      screen.getByText('Aucun produit ne correspond à « creme epaisse ».'),
+    ).toBeInTheDocument();
   });
 
-  it('n’affiche que les produits vendus dans l’enseigne choisie', async () => {
+  it('ne propose ni porc ni alcool', async () => {
     const user = setup();
-    await user.type(screen.getByRole('searchbox'), 'lait demi ecreme uht');
-    const before = screen.getAllByRole('article').length;
+    const search = screen.getByRole('searchbox');
+    for (const word of ['porc', 'jambon', 'lardons', 'biere', 'vin rouge', 'whisky']) {
+      await user.clear(search);
+      await user.type(search, word);
+      expect(
+        screen.getByText(`Aucun produit ne correspond à « ${word} ».`),
+        word,
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('signale la viande certifiée halal', async () => {
+    const user = setup();
+    await user.type(screen.getByRole('searchbox'), 'merguez');
+    expect(within(card('Merguez halal')).getByText('Certifié halal')).toBeInTheDocument();
+  });
+
+  it('indique quoi prendre en rayon dans l’enseigne choisie', async () => {
+    const user = setup();
     await user.selectOptions(screen.getByRole('combobox', { name: 'Mon magasin' }), 'lidl');
-    expect(count()).toMatch(/chez Lidl/);
-    const brands = screen
-      .getAllByRole('article')
-      .map((a) => within(a).getByRole('heading').nextSibling?.textContent);
-    expect(brands.join()).not.toMatch(/Carrefour|Marque Repère|Eco\+|Simpl/);
-    expect(brands.join()).toMatch(/Milbona/);
-    expect(screen.getAllByRole('article').length).toBeLessThan(before);
+    await user.type(screen.getByRole('searchbox'), 'lait demi');
+    expect(card('Lait demi-écrémé UHT')).toHaveTextContent('Chez Lidl : Milbona');
+    await user.clear(screen.getByRole('searchbox'));
+    await user.type(screen.getByRole('searchbox'), 'oeufs');
+    expect(card('Œufs de plein air')).toHaveTextContent('Chez Lidl : marque Lidl');
+
+    await user.clear(screen.getByRole('searchbox'));
+    await user.type(screen.getByRole('searchbox'), 'bananes');
+    expect(card('Bananes')).toHaveTextContent('Chez Lidl : vrac ou sans marque');
+
+    await user.clear(screen.getByRole('searchbox'));
+    await user.type(screen.getByRole('searchbox'), 'escalopes de poulet');
+    expect(card('Escalopes de poulet halal')).toHaveTextContent(
+      'Chez Lidl : référence halal à trouver',
+    );
   });
 
-  it('ajoute un produit précis puis ajuste sa quantité', async () => {
+  it('ajoute une fiche puis ajuste sa quantité', async () => {
     const user = setup();
-    await user.type(screen.getByRole('searchbox'), 'spaghetti barilla');
-    await user.click(
-      screen.getByRole('button', { name: 'Ajouter Spaghetti Barilla 500 g à la liste' }),
-    );
-    const stepper = screen.getByRole('group', { name: 'Quantité de Spaghetti Barilla 500 g' });
+    await user.type(screen.getByRole('searchbox'), 'spaghetti');
+    await user.click(screen.getByRole('button', { name: 'Ajouter Spaghetti (500 g) à la liste' }));
+    const stepper = screen.getByRole('group', { name: 'Quantité de Spaghetti (500 g)' });
     await user.click(within(stepper).getByRole('button', { name: /Augmenter/ }));
     expect(within(stepper).getByText('2')).toBeInTheDocument();
     await user.click(within(stepper).getByRole('button', { name: /Diminuer/ }));
     await user.click(within(stepper).getByRole('button', { name: /Retirer .* de la liste/ }));
     expect(
-      screen.getByRole('button', { name: 'Ajouter Spaghetti Barilla 500 g à la liste' }),
+      screen.getByRole('button', { name: 'Ajouter Spaghetti (500 g) à la liste' }),
     ).toBeInTheDocument();
   });
 
-  it('ajoute « peu importe la marque » et le retrouve dans la liste', async () => {
+  it('retrouve les articles dans la liste, classés par rayon, avec la marque à prendre', async () => {
     const user = setup();
-    await user.type(screen.getByRole('searchbox'), 'lait demi ecreme lactel');
-    const [first] = screen.getAllByRole('button', {
-      name: 'Ajouter Lait demi-écrémé UHT, peu importe la marque',
-    });
-    await user.click(first!);
-    expect(
-      screen.getAllByRole('group', {
-        name: 'Quantité de Lait demi-écrémé UHT, peu importe la marque',
-      })[0],
-    ).toHaveTextContent('1 L');
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Mon magasin' }), 'lidl');
+    await user.type(screen.getByRole('searchbox'), 'lait demi');
+    await user.click(
+      screen.getByRole('button', { name: 'Ajouter Lait demi-écrémé UHT (1 L) à la liste' }),
+    );
 
     const [nav] = screen.getAllByRole('link', { name: /Ma liste/ });
     await user.click(nav!);
     expect(
       screen.getByRole('heading', { level: 1, name: /^Semaine du \d{2}\/\d{2}\/\d{4}$/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Toutes marques')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: /Crèmerie/ })).toBeInTheDocument();
+    const rayon = screen
+      .getByRole('heading', { level: 2, name: /Crèmerie/ })
+      .closest('section') as HTMLElement;
+    expect(rayon).toHaveTextContent('Lait demi-écrémé UHT');
+    expect(rayon).toHaveTextContent('1 L, Milbona chez Lidl');
   });
 });
 
@@ -110,18 +137,15 @@ describe('produit personnalisé', () => {
     expect(within(dialog).getByRole('textbox', { name: 'Contenance' })).toHaveValue('1000');
 
     await user.selectOptions(within(dialog).getByRole('combobox', { name: 'Rayon' }), 'cremerie');
-    await user.selectOptions(
-      within(dialog).getByRole('combobox', { name: 'Équivalent à' }),
-      'lait-demi-ecreme',
-    );
     await user.click(within(dialog).getByRole('button', { name: 'Créer le produit' }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await user.type(screen.getByRole('searchbox'), 'de test');
-    const card = screen.getByRole('article');
-    expect(within(card).getByText('Ajouté par vous')).toBeInTheDocument();
+    const custom = screen.getByRole('article');
+    expect(within(custom).getByText('Ajouté par vous')).toBeInTheDocument();
+    expect(within(custom).getByText('Marque Test')).toBeInTheDocument();
     expect(
-      within(card).getByRole('group', { name: /Quantité de Lait demi-écrémé de test/ }),
+      within(custom).getByRole('group', { name: /Quantité de Lait demi-écrémé de test/ }),
     ).toBeInTheDocument();
   });
 
@@ -156,6 +180,11 @@ describe('préférences', () => {
     const initial = toggle.getAttribute('aria-pressed');
     await user.click(toggle);
     expect(toggle).toHaveAttribute('aria-pressed', initial === 'true' ? 'false' : 'true');
-    expect(localStorage.getItem('panier-malin:theme')).toContain('"v":1');
+    const stored = JSON.parse(localStorage.getItem('panier-malin:theme') ?? '{}') as {
+      v: number;
+      data: string;
+    };
+    expect(stored.v).toBe(SCHEMA_VERSION);
+    expect(stored.data).toBe(initial === 'true' ? 'light' : 'dark');
   });
 });

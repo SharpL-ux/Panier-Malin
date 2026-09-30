@@ -1,9 +1,10 @@
 import type { Category, CategoryId } from '../types/catalog';
 
 /**
- * Les 24 catégories, dans l'ordre logique des rayons : on entre par les fruits et légumes,
+ * Les 22 rayons, dans l'ordre logique de passage : on entre par les fruits et légumes,
  * on passe par le frais et l'épicerie, et on termine par les surgelés pour ne pas rompre
- * la chaîne du froid.
+ * la chaîne du froid. Le catalogue est halal : pas de rayon alcools, et la viande
+ * certifiée halal est dans les rayons Boucherie, Volaille et Charcuterie.
  */
 export const CATEGORIES: readonly Category[] = [
   { id: 'fruits', label: 'Fruits', icon: '🍎', color: '#e5484d', aisleOrder: 1 },
@@ -45,21 +46,19 @@ export const CATEGORIES: readonly Category[] = [
     color: '#13a89e',
     aisleOrder: 15,
   },
-  { id: 'halal', label: 'Halal', icon: '🌙', color: '#2f9e6e', aisleOrder: 16 },
-  { id: 'boissons', label: 'Boissons', icon: '🥤', color: '#1fa2d6', aisleOrder: 17 },
-  { id: 'alcools', label: 'Alcools', icon: '🍷', color: '#7b2d5b', aisleOrder: 18 },
-  { id: 'bebe', label: 'Bébé', icon: '🍼', color: '#6ea8e0', aisleOrder: 19 },
-  { id: 'hygiene-beaute', label: 'Hygiène & Beauté', icon: '🧴', color: '#3fb6a8', aisleOrder: 20 },
-  { id: 'entretien', label: 'Entretien & Ménage', icon: '🧽', color: '#5a6acf', aisleOrder: 21 },
+  { id: 'boissons', label: 'Boissons', icon: '🥤', color: '#1fa2d6', aisleOrder: 16 },
+  { id: 'bebe', label: 'Bébé', icon: '🍼', color: '#6ea8e0', aisleOrder: 17 },
+  { id: 'hygiene-beaute', label: 'Hygiène & Beauté', icon: '🧴', color: '#3fb6a8', aisleOrder: 18 },
+  { id: 'entretien', label: 'Entretien & Ménage', icon: '🧽', color: '#5a6acf', aisleOrder: 19 },
   {
     id: 'papeterie-maison',
     label: 'Papeterie & Maison',
     icon: '📎',
     color: '#8a8f98',
-    aisleOrder: 22,
+    aisleOrder: 20,
   },
-  { id: 'animaux', label: 'Animaux', icon: '🐾', color: '#a0663a', aisleOrder: 23 },
-  { id: 'surgeles', label: 'Surgelés', icon: '❄️', color: '#4aa8d8', aisleOrder: 24 },
+  { id: 'animaux', label: 'Animaux', icon: '🐾', color: '#a0663a', aisleOrder: 21 },
+  { id: 'surgeles', label: 'Surgelés', icon: '❄️', color: '#4aa8d8', aisleOrder: 22 },
 ];
 
 const BY_ID = new Map(CATEGORIES.map((c) => [c.id, c]));

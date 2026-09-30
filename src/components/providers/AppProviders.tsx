@@ -8,8 +8,10 @@ import {
   type Theme,
 } from '../../hooks/contexts';
 import { buildCatalog } from '../../services/catalog';
+import { OBSOLETE_KEYS } from '../../services/migrations';
+import { removeValue } from '../../services/storage';
 import * as lists from '../../services/shoppingList';
-import type { EquivalenceGroup, Product } from '../../types/catalog';
+import type { Product } from '../../types/catalog';
 import type { ShoppingList } from '../../types/list';
 
 /** Thème initial : réglage imposé par la page hôte (data-theme) s'il existe, sinon préférence du système. */
@@ -39,6 +41,10 @@ export function AppProviders({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
+  useEffect(() => {
+    for (const key of OBSOLETE_KEYS) removeValue(key);
+  }, []);
+
   const settings = useMemo(
     () => ({
       theme,
@@ -54,20 +60,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
     'catalogue:produits-perso',
     () => [],
   );
-  const [customGroups, setCustomGroups] = usePersistentState<EquivalenceGroup[]>(
-    'catalogue:groupes-perso',
-    () => [],
-  );
-  const catalog = useMemo(
-    () => buildCatalog(customProducts, customGroups),
-    [customProducts, customGroups],
-  );
+  const catalog = useMemo(() => buildCatalog(customProducts), [customProducts]);
   const addCustomProduct = useCallback(
-    (product: Product, group?: EquivalenceGroup) => {
-      setCustomProducts((current) => [...current, { ...product, custom: true }]);
-      if (group) setCustomGroups((current) => [...current, group]);
-    },
-    [setCustomProducts, setCustomGroups],
+    (product: Product) =>
+      setCustomProducts((current) => [...current, { ...product, custom: true }]),
+    [setCustomProducts],
   );
   const catalogValue = useMemo(() => ({ catalog, addCustomProduct }), [catalog, addCustomProduct]);
 
@@ -86,15 +83,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
     () => ({
       list,
       addProduct: (product: Product) => update((l) => lists.addProduct(l, product)),
-      addGeneric: (product: Product) => {
-        const group = catalog.groupById.get(product.equivalenceGroup);
-        if (group) update((l) => lists.addGeneric(l, group, product));
-      },
       changeQuantity: (itemId: string, steps: number) =>
         update((l) => lists.changeQuantity(l, itemId, steps)),
       removeItem: (itemId: string) => update((l) => lists.removeItem(l, itemId)),
     }),
-    [list, update, catalog],
+    [list, update],
   );
 
   return (

@@ -1,22 +1,24 @@
 import { useMemo, useState } from 'react';
-import { useCatalog, useShoppingList } from '../../hooks/useAppContexts';
-import { findGenericItem, findProductItem } from '../../services/shoppingList';
+import { getEnseigne } from '../../data/enseignes';
+import { useSettings, useShoppingList } from '../../hooks/useAppContexts';
+import { referenceAt } from '../../services/catalog';
+import { findItem } from '../../services/shoppingList';
 import type { Product } from '../../types/catalog';
 import { ProductCard } from './ProductCard';
 
 export const PAGE_SIZE = 48;
 
 /**
- * Grille de produits affichée par tranches : sur mobile, rendre plus de 700 cartes d'un
- * coup ralentirait inutilement l'ouverture du catalogue.
+ * Grille de fiches affichée par tranches, pour garder un catalogue fluide sur mobile.
  * Le composant parent change la `key` quand les filtres changent, ce qui remet la pagination à zéro.
  */
 export function ProductGrid({ products }: { products: Product[] }) {
   const [limit, setLimit] = useState(PAGE_SIZE);
-  const { catalog } = useCatalog();
-  const { list, addProduct, addGeneric, changeQuantity } = useShoppingList();
+  const { enseigne } = useSettings();
+  const { list, addProduct, changeQuantity } = useShoppingList();
   const visible = useMemo(() => products.slice(0, limit), [products, limit]);
   const remaining = products.length - visible.length;
+  const enseigneLabel = enseigne === 'all' ? null : getEnseigne(enseigne).label;
 
   return (
     <div>
@@ -26,12 +28,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
             <div className="flex w-full flex-col [&>article]:flex-1">
               <ProductCard
                 product={product}
-                group={catalog.groupById.get(product.equivalenceGroup)}
+                enseigneLabel={enseigneLabel}
+                reference={enseigne === 'all' ? undefined : referenceAt(product, enseigne)}
                 price={null}
-                productItem={findProductItem(list, product.id)}
-                genericItem={findGenericItem(list, product.equivalenceGroup)}
+                item={findItem(list, product.id)}
                 onAdd={addProduct}
-                onAddGeneric={addGeneric}
                 onChangeQuantity={changeQuantity}
               />
             </div>

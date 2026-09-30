@@ -1,6 +1,7 @@
 /** Enseignes gérées. Aucun logo officiel n'est utilisé : seulement un badge coloré avec le nom. */
 export type EnseigneId = 'carrefour' | 'lidl' | 'leclerc' | 'hmarket' | 'marka';
 
+/** Rayons, dans l'ordre de passage en magasin. Le catalogue est halal : pas de rayon alcools. */
 export type CategoryId =
   | 'fruits'
   | 'legumes'
@@ -17,9 +18,7 @@ export type CategoryId =
   | 'epicerie-salee'
   | 'epicerie-sucree'
   | 'produits-du-monde'
-  | 'halal'
   | 'boissons'
-  | 'alcools'
   | 'bebe'
   | 'hygiene-beaute'
   | 'entretien'
@@ -40,40 +39,47 @@ export interface Pack {
   unit: PackUnit;
 }
 
-export type BrandType = 'nationale' | 'distributeur' | 'sans-marque';
+/**
+ * Ce qu'il faut prendre en rayon dans une enseigne pour une fiche : sa gamme la moins
+ * chère connue (premier prix ou marque de l'enseigne).
+ */
+export interface StoreReference {
+  enseigne: EnseigneId;
+  brand: string;
+  /** Code-barres EAN-8 ou EAN-13. Chaîne vide tant qu'il n'a pas été vérifié : on n'invente jamais un code. */
+  ean: string;
+  /** Format de cette référence, s'il diffère de celui de la fiche (couches par 44 ou par 48…). */
+  pack?: Pack;
+}
 
+/**
+ * Une fiche produit : ce que l'on met dans sa liste (« Lait demi-écrémé UHT, 1 L »),
+ * sans choisir de marque. Le comparateur cherche son prix dans chaque magasin.
+ */
 export interface Product {
-  /** Identifiant stable, lisible : "lait-demi-ecreme-milbona-1l". */
+  /** Identifiant stable, lisible : "lait-demi-ecreme-uht". */
   id: string;
   name: string;
-  brand: string;
-  brandType: BrandType;
-  /** Enseignes qui vendent ce produit. Liste vide = vendu partout (marques nationales, vrac). */
-  enseignes: EnseigneId[];
   categoryId: CategoryId;
   /** Emoji affiché sur la carte. */
   icon: string;
-  /** Code-barres EAN-8 ou EAN-13. Chaîne vide tant qu'il n'a pas été vérifié : on n'invente jamais un code. */
-  ean: string;
-  /** Pour les produits au poids : catégorie Open Food Facts utilisée par Open Prices (prix de type CATEGORY). */
-  offCategoryTag?: string;
+  /** Format courant, utilisé pour la quantité de la liste (1 kg pour le vrac). */
   pack: Pack;
   /** Vendu au poids : la quantité de la liste est exprimée en kg. */
   soldByWeight: boolean;
-  /** Groupe d'équivalence : produits interchangeables pour la comparaison entre enseignes. */
-  equivalenceGroup: string;
-  flags: { bio: boolean; halal: boolean };
+  /** Viande, volaille ou charcuterie certifiée halal. */
+  halal: boolean;
+  /** Une référence par enseigne au plus. Vide pour le vrac et quand la référence reste à trouver. */
+  references: StoreReference[];
+  /** Pour le vrac : catégorie Open Food Facts utilisée par Open Prices (prix au kilo ou à la pièce). */
+  offCategoryTag?: string;
+  /** Produit personnalisé précis : sa marque et son code-barres, recherchés dans tous les magasins. */
+  brand?: string;
+  ean?: string;
   /** Image fournie par Open Food Facts (produits personnalisés uniquement). */
   imageUrl?: string;
   /** Produit ajouté par l'utilisateur, stocké localement. */
   custom?: boolean;
-}
-
-export interface EquivalenceGroup {
-  id: string;
-  label: string;
-  categoryId: CategoryId;
-  refUnit: RefUnit;
 }
 
 export interface Category {

@@ -1,147 +1,107 @@
 import { describe, expect, it } from 'vitest';
-import type { EquivalenceGroup, Product } from '../types/catalog';
+import type { Product } from '../types/catalog';
 import {
   buildCatalog,
   countByCategory,
   DEFAULT_FILTERS,
   filterProducts,
-  isSoldAt,
+  referenceAt,
   sortProducts,
 } from './catalog';
 
-const groups: EquivalenceGroup[] = [
-  { id: 'lait', label: 'Lait demi-écrémé', categoryId: 'cremerie', refUnit: 'L' },
-  { id: 'pates', label: 'Spaghetti', categoryId: 'epicerie-salee', refUnit: 'kg' },
-];
-
-function make(partial: Partial<Product> & Pick<Product, 'id'>): Product {
+function make(partial: Partial<Product> & Pick<Product, 'id' | 'name'>): Product {
   return {
-    name: 'Lait demi-écrémé UHT',
-    brand: 'Lactel',
-    brandType: 'nationale',
-    enseignes: [],
     categoryId: 'cremerie',
     icon: '🥛',
-    ean: '',
     pack: { count: 1, size: 1000, unit: 'ml' },
     soldByWeight: false,
-    equivalenceGroup: 'lait',
-    flags: { bio: false, halal: false },
+    halal: false,
+    references: [],
     ...partial,
   };
 }
 
 const products = [
-  make({ id: 'lactel' }),
-  make({ id: 'milbona', brand: 'Milbona', brandType: 'distributeur', enseignes: ['lidl'] }),
   make({
-    id: 'milbona-6',
-    brand: 'Milbona',
-    brandType: 'distributeur',
-    enseignes: ['lidl'],
-    pack: { count: 6, size: 1000, unit: 'ml' },
+    id: 'lait',
+    name: 'Lait demi-écrémé UHT',
+    references: [
+      { enseigne: 'lidl', brand: 'Milbona', ean: '' },
+      { enseigne: 'carrefour', brand: 'Simpl', ean: '' },
+    ],
   }),
-  make({
-    id: 'bio',
-    brand: 'Carrefour Bio',
-    brandType: 'distributeur',
-    enseignes: ['carrefour'],
-    flags: { bio: true, halal: false },
-  }),
+  make({ id: 'creme', name: 'Crème fraîche épaisse', pack: { count: 1, size: 200, unit: 'ml' } }),
   make({
     id: 'spaghetti',
     name: 'Spaghetti',
-    brand: 'Barilla',
     categoryId: 'epicerie-salee',
-    equivalenceGroup: 'pates',
     pack: { count: 1, size: 500, unit: 'g' },
   }),
+  make({
+    id: 'bananes',
+    name: 'Bananes',
+    categoryId: 'fruits',
+    soldByWeight: true,
+    pack: { count: 1, size: 1000, unit: 'g' },
+  }),
 ];
-const catalog = buildCatalog([], [], { products, groups });
+const catalog = buildCatalog([], products);
 const ids = (list: Product[]) => list.map((p) => p.id);
 
-describe('filtres du catalogue', () => {
-  it('recherche sans tenir compte des accents ni de la casse, y compris dans le nom du groupe', () => {
-    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'ECREME milbona' }))).toEqual([
-      'milbona',
-      'milbona-6',
+describe('recherche et filtres', () => {
+  it('ignore les accents et la casse', () => {
+    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'CREME epaisse' }))).toEqual([
+      'creme',
     ]);
-    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'spaghéttis' }))).toEqual([]);
-    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'spaghetti' }))).toEqual([
-      'spaghetti',
+    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'écrémé' }))).toEqual(['lait']);
+  });
+
+  it('retrouve une fiche par la marque d’une de ses références', () => {
+    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, query: 'milbona' }))).toEqual([
+      'lait',
     ]);
   });
 
-  it('filtre par enseigne : marques nationales partout, marques de distributeur chez elles seulement', () => {
-    expect(ids(filterProducts(catalog, { ...DEFAULT_FILTERS, enseigne: 'lidl' }))).toEqual([
-      'lactel',
-      'milbona',
-      'milbona-6',
-      'spaghetti',
-    ]);
-    expect(isSoldAt(products[1]!, 'carrefour')).toBe(false);
+  it('filtre par rayon, ou l’ignore pour compter les résultats de chaque rayon', () => {
+    const f = { ...DEFAULT_FILTERS, categoryId: 'fruits' as const };
+    expect(ids(filterProducts(catalog, f))).toEqual(['bananes']);
+    expect(filterProducts(catalog, f, undefined, { ignoreCategory: true })).toHaveLength(4);
+    expect(countByCategory(products).get('cremerie')).toBe(2);
   });
 
-  it('combine catégorie, bio et marque de distributeur', () => {
-    const f = { ...DEFAULT_FILTERS, categoryId: 'cremerie' as const };
-    expect(ids(filterProducts(catalog, { ...f, bioOnly: true }))).toEqual(['bio']);
-    expect(ids(filterProducts(catalog, { ...f, distributeurOnly: true }))).toEqual([
-      'milbona',
-      'milbona-6',
-      'bio',
-    ]);
-  });
-
-  it('peut ignorer la catégorie (pour compter les résultats par rayon)', () => {
-    const f = { ...DEFAULT_FILTERS, categoryId: 'cremerie' as const, query: 'barilla' };
-    expect(ids(filterProducts(catalog, f, undefined, { ignoreCategory: true }))).toEqual([
-      'spaghetti',
-    ]);
-    expect(countByCategory(products).get('cremerie')).toBe(4);
-  });
-
-  it('« prix connu uniquement » garde les produits qui ont un prix', () => {
-    const prices = { priceOf: (p: Product) => (p.id === 'lactel' ? 120 : null) };
+  it('« prix connu uniquement » garde les fiches qui ont un prix', () => {
+    const prices = { priceOf: (p: Product) => (p.id === 'lait' ? 95 : null) };
     expect(
       ids(filterProducts(catalog, { ...DEFAULT_FILTERS, knownPriceOnly: true }, prices)),
-    ).toEqual(['lactel']);
+    ).toEqual(['lait']);
   });
 });
 
-describe('tri du catalogue', () => {
+describe('tri', () => {
   const prices = {
-    priceOf: (p: Product) =>
-      ({ lactel: 125, milbona: 95, 'milbona-6': 540, spaghetti: 99 })[p.id] ?? null,
+    priceOf: (p: Product) => ({ lait: 95, creme: 89, spaghetti: 79 })[p.id] ?? null,
   };
 
-  it('trie par nom, puis par marque et par format', () => {
-    expect(ids(sortProducts(products, 'nom'))).toEqual([
-      'bio',
-      'lactel',
-      'milbona',
-      'milbona-6',
-      'spaghetti',
-    ]);
+  it('trie par nom à la française', () => {
+    expect(ids(sortProducts(products, 'nom'))).toEqual(['bananes', 'creme', 'lait', 'spaghetti']);
   });
 
   it('trie par prix, les prix inconnus en dernier', () => {
     expect(ids(sortProducts(products, 'prix', prices))).toEqual([
-      'milbona',
       'spaghetti',
-      'lactel',
-      'milbona-6',
-      'bio',
+      'creme',
+      'lait',
+      'bananes',
     ]);
   });
 
   it('trie par prix au litre ou au kilo pour comparer des formats différents', () => {
-    // 5,40 € les 6 L = 0,90 €/L, moins cher que 0,95 €/L ; 0,99 € les 500 g = 1,98 €/kg.
+    // 0,89 € les 20 cl = 4,45 €/L ; 0,79 € les 500 g = 1,58 €/kg ; 0,95 €/L.
     expect(ids(sortProducts(products, 'prix-unitaire', prices))).toEqual([
-      'milbona-6',
-      'milbona',
-      'lactel',
+      'lait',
       'spaghetti',
-      'bio',
+      'creme',
+      'bananes',
     ]);
   });
 
@@ -152,12 +112,19 @@ describe('tri du catalogue', () => {
   });
 });
 
-describe('catalogue et produits personnalisés', () => {
-  it('ajoute les produits personnalisés sans jamais écraser un produit de base', () => {
+describe('références par enseigne', () => {
+  it('indique la marque à prendre dans chaque enseigne', () => {
+    expect(referenceAt(products[0]!, 'lidl')?.brand).toBe('Milbona');
+    expect(referenceAt(products[0]!, 'leclerc')).toBeUndefined();
+  });
+});
+
+describe('produits personnalisés', () => {
+  it('s’ajoutent au catalogue sans jamais remplacer une fiche de base', () => {
     const custom = make({ id: 'perso-1', name: 'Mon produit', custom: true });
-    const clash = make({ id: 'lactel', name: 'Écrasé ?', custom: true });
-    const merged = buildCatalog([custom, clash], [], { products, groups });
+    const clash = make({ id: 'lait', name: 'Écrasé ?', custom: true });
+    const merged = buildCatalog([custom, clash], products);
     expect(merged.products).toHaveLength(products.length + 1);
-    expect(merged.productById.get('lactel')?.name).toBe('Lait demi-écrémé UHT');
+    expect(merged.productById.get('lait')?.name).toBe('Lait demi-écrémé UHT');
   });
 });

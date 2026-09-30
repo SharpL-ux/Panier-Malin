@@ -1,20 +1,12 @@
 import { LoaderCircle, ScanBarcode } from 'lucide-react';
-import { useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CATEGORIES, getCategory, isCategoryId } from '../../data/categories';
-import { ENSEIGNES, isEnseigneId } from '../../data/enseignes';
 import { useCatalog, useShoppingList } from '../../hooks/useAppContexts';
 import { fetchOffProduct, OffLookupError } from '../../services/openFoodFacts';
-import type {
-  CategoryId,
-  EnseigneId,
-  EquivalenceGroup,
-  PackUnit,
-  Product,
-} from '../../types/catalog';
+import type { CategoryId, PackUnit, Product } from '../../types/catalog';
 import { cleanEan, isValidEan } from '../../utils/ean';
 import { createId } from '../../utils/ids';
 import { slugify } from '../../utils/text';
-import { refUnitOf } from '../../utils/units';
 import { Dialog } from '../ui/Dialog';
 
 interface Props {
@@ -31,9 +23,9 @@ type Lookup =
   | { state: 'missing' }
   | { state: 'error'; message: string };
 
-const NO_GROUP = '';
 const input =
   'h-11 w-full rounded-md border border-line-strong bg-surface px-3 text-base aria-[invalid=true]:border-dear';
+const checkbox = 'size-5 accent-[var(--primary)]';
 
 function Field({
   id,
@@ -77,7 +69,7 @@ export function CustomProductDialog(props: Props) {
 }
 
 function CustomProductForm({ onClose, initialName = '', initialCategory }: Props) {
-  const { catalog, addCustomProduct } = useCatalog();
+  const { addCustomProduct } = useCatalog();
   const { addProduct } = useShoppingList();
   const ids = {
     ean: useId(),
@@ -87,8 +79,6 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
     count: useId(),
     size: useId(),
     unit: useId(),
-    group: useId(),
-    where: useId(),
   };
 
   const [ean, setEan] = useState('');
@@ -99,30 +89,12 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
   const [size, setSize] = useState('');
   const [unit, setUnit] = useState<PackUnit>('g');
   const [soldByWeight, setSoldByWeight] = useState(false);
-  const [groupId, setGroupId] = useState(NO_GROUP);
-  const [bio, setBio] = useState(false);
   const [halal, setHalal] = useState(false);
-  const [where, setWhere] = useState<EnseigneId | 'partout'>('partout');
   const [alsoAddToList, setAlsoAddToList] = useState(true);
   const [imageUrl, setImageUrl] = useState<string>();
   const [lookup, setLookup] = useState<Lookup>({ state: 'idle' });
   const [submitted, setSubmitted] = useState(false);
   const abort = useRef<AbortController | null>(null);
-
-  const effectiveUnit: PackUnit = soldByWeight ? 'g' : unit;
-  const refUnit = refUnitOf({ count: 1, size: 1, unit: effectiveUnit });
-  const compatibleGroups = useMemo(
-    () =>
-      catalog.groups
-        .filter(
-          (g) =>
-            g.categoryId === categoryId &&
-            g.refUnit === refUnit &&
-            !g.id.startsWith('perso-groupe-'),
-        )
-        .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
-    [catalog.groups, categoryId, refUnit],
-  );
 
   const errors = {
     ean:
@@ -186,39 +158,30 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
     setSubmitted(true);
     if (hasErrors) return;
 
-    const id = `perso-${slugify(name).slice(0, 40) || 'produit'}-${createId().slice(0, 8)}`;
-    let group: EquivalenceGroup | undefined;
-    let equivalenceGroup = groupId;
-    if (groupId === NO_GROUP) {
-      group = { id: `perso-groupe-${id}`, label: name.trim(), categoryId, refUnit };
-      equivalenceGroup = group.id;
-    }
     const cleanBrand = brand.trim();
     const product: Product = {
-      id,
+      id: `perso-${slugify(name).slice(0, 40) || 'produit'}-${createId().slice(0, 8)}`,
       name: name.trim(),
-      brand: cleanBrand || (soldByWeight ? 'Vrac' : 'Sans marque'),
-      brandType: where !== 'partout' ? 'distributeur' : cleanBrand ? 'nationale' : 'sans-marque',
-      enseignes: where === 'partout' ? [] : [where],
       categoryId,
       icon: getCategory(categoryId).icon,
-      ean: ean ? cleanEan(ean) : '',
       pack: soldByWeight
         ? { count: 1, size: 1000, unit: 'g' }
-        : { count: Number(count), size: Number(size.replace(',', '.')), unit: effectiveUnit },
+        : { count: Number(count), size: Number(size.replace(',', '.')), unit },
       soldByWeight,
-      equivalenceGroup,
-      flags: { bio, halal },
-      imageUrl,
+      halal,
+      references: [],
+      ...(cleanBrand ? { brand: cleanBrand } : {}),
+      ...(ean ? { ean: cleanEan(ean) } : {}),
+      ...(imageUrl ? { imageUrl } : {}),
       custom: true,
     };
-    addCustomProduct(product, group);
+    addCustomProduct(product);
     if (alsoAddToList) addProduct(product);
     onClose();
   }
 
-  const describedBy = (key: keyof typeof errors, id: string, hint = false) =>
-    submitted && errors[key] ? `${id}-error` : hint ? `${id}-hint` : undefined;
+  const describedBy = (key: keyof typeof errors, id: string) =>
+    submitted && errors[key] ? `${id}-error` : undefined;
   const invalid = (key: keyof typeof errors) =>
     (submitted || key === 'ean') && Boolean(errors[key]);
 
@@ -227,8 +190,8 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
       <fieldset className="space-y-2 rounded-md border border-line p-3">
         <legend className="px-1 font-medium">Code-barres (facultatif)</legend>
         <p className="text-sm text-ink-soft">
-          Le code-barres permet de récupérer le nom, la marque et la photo sur Open Food Facts, puis
-          les prix sur Open Prices.
+          Pour un produit précis : le code-barres permet de récupérer son nom, sa marque et sa photo
+          sur Open Food Facts, puis ses prix sur Open Prices dans tous les magasins.
         </p>
         <div className="flex gap-2">
           <label htmlFor={ids.ean} className="sr-only">
@@ -290,7 +253,11 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
             className={input}
           />
         </Field>
-        <Field id={ids.brand} label="Marque" hint="Laissez vide pour un produit sans marque.">
+        <Field
+          id={ids.brand}
+          label="Marque"
+          hint="Facultative : laissez vide pour un produit générique."
+        >
           <input
             id={ids.brand}
             value={brand}
@@ -305,33 +272,12 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
             value={categoryId}
             onChange={(e) => {
               if (isCategoryId(e.target.value)) setCategoryId(e.target.value);
-              setGroupId(NO_GROUP);
             }}
             className={input}
           >
             {CATEGORIES.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.icon} {c.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field
-          id={ids.where}
-          label="Où l’acheter ?"
-          hint="Choisissez une enseigne pour une marque de distributeur."
-        >
-          <select
-            id={ids.where}
-            value={where}
-            onChange={(e) => setWhere(isEnseigneId(e.target.value) ? e.target.value : 'partout')}
-            aria-describedby={`${ids.where}-hint`}
-            className={input}
-          >
-            <option value="partout">Dans tous les magasins</option>
-            {ENSEIGNES.map((e) => (
-              <option key={e.id} value={e.id}>
-                Uniquement chez {e.label}
               </option>
             ))}
           </select>
@@ -344,11 +290,8 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
           <input
             type="checkbox"
             checked={soldByWeight}
-            onChange={(e) => {
-              setSoldByWeight(e.target.checked);
-              setGroupId(NO_GROUP);
-            }}
-            className="size-5 accent-[var(--primary)]"
+            onChange={(e) => setSoldByWeight(e.target.checked)}
+            className={checkbox}
           />
           Vendu au poids (prix au kilo)
         </label>
@@ -392,10 +335,7 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
               <select
                 id={ids.unit}
                 value={unit}
-                onChange={(e) => {
-                  setUnit(e.target.value as PackUnit);
-                  setGroupId(NO_GROUP);
-                }}
+                onChange={(e) => setUnit(e.target.value as PackUnit)}
                 className={input}
               >
                 <option value="g">grammes</option>
@@ -415,47 +355,15 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
         )}
       </fieldset>
 
-      <Field
-        id={ids.group}
-        label="Équivalent à"
-        hint="Pour comparer les prix entre enseignes, rattachez le produit à des produits interchangeables du même rayon."
-      >
-        <select
-          id={ids.group}
-          value={groupId}
-          onChange={(e) => setGroupId(e.target.value)}
-          aria-describedby={`${ids.group}-hint`}
-          className={input}
-        >
-          <option value={NO_GROUP}>Aucun, c’est un produit unique</option>
-          {compatibleGroups.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.label}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      <div className="flex flex-wrap gap-x-6 gap-y-2">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={bio}
-            onChange={(e) => setBio(e.target.checked)}
-            className="size-5 accent-[var(--primary)]"
-          />
-          Bio
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={halal}
-            onChange={(e) => setHalal(e.target.checked)}
-            className="size-5 accent-[var(--primary)]"
-          />
-          Halal
-        </label>
-      </div>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={halal}
+          onChange={(e) => setHalal(e.target.checked)}
+          className={checkbox}
+        />
+        Viande, volaille ou charcuterie certifiée halal
+      </label>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
         <label className="flex items-center gap-2">
@@ -463,7 +371,7 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
             type="checkbox"
             checked={alsoAddToList}
             onChange={(e) => setAlsoAddToList(e.target.checked)}
-            className="size-5 accent-[var(--primary)]"
+            className={checkbox}
           />
           Ajouter aussi à ma liste
         </label>
