@@ -33,7 +33,7 @@ function Toggle({
       title={hint}
       onClick={onClick}
       className={[
-        'h-9 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap',
+        'h-9 shrink-0 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap',
         pressed
           ? 'border-primary bg-primary text-on-primary'
           : 'border-line-strong bg-surface hover:bg-surface-2',
@@ -98,7 +98,8 @@ export function CatalogToolbar({
           <span className="max-sm:sr-only">Ajouter un produit</span>
         </button>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Sur mobile, filtres et tri tiennent sur une seule ligne défilante pour laisser la place aux produits. */}
+      <div className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
         <Toggle pressed={filters.bioOnly} onClick={() => onChange({ bioOnly: !filters.bioOnly })}>
           Bio
         </Toggle>
@@ -116,8 +117,8 @@ export function CatalogToolbar({
         >
           Prix connu uniquement
         </Toggle>
-        <div className="ml-auto flex items-center gap-2">
-          <label htmlFor={sortId} className="text-sm text-ink-soft">
+        <div className="ml-auto flex shrink-0 items-center gap-2 pl-2">
+          <label htmlFor={sortId} className="text-sm whitespace-nowrap text-ink-soft">
             Trier par
           </label>
           <select

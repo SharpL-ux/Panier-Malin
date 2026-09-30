@@ -27,10 +27,10 @@ export function Header() {
   const { list } = useShoppingList();
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface pt-[env(safe-area-inset-top)]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3">
         <Link to="/" className="flex shrink-0 items-center gap-2 rounded text-ink">
           <Logo />
-          <span className="font-display text-2xl leading-none font-bold max-[26rem]:sr-only">
+          <span className="font-display text-xl leading-none font-bold max-[23.75rem]:sr-only sm:text-2xl">
             Panier malin
           </span>
         </Link>

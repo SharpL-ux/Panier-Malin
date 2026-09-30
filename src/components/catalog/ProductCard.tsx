@@ -1,4 +1,4 @@
-import { Leaf, Plus } from 'lucide-react';
+import { Check, Leaf, Minus, Plus, Trash2 } from 'lucide-react';
 import { memo, type CSSProperties } from 'react';
 import { getCategory } from '../../data/categories';
 import type { EquivalenceGroup, Product } from '../../types/catalog';
@@ -22,6 +22,58 @@ interface Props {
 
 function isLastStep(item: ListItem): boolean {
   return item.quantity - item.step <= 0;
+}
+
+/**
+ * Rappel discret d'un article « toutes marques » : il s'affiche sur chaque carte du groupe,
+ * il doit donc rester plus léger que le sélecteur principal.
+ */
+function GenericLine({
+  label,
+  display,
+  isLast,
+  onIncrement,
+  onDecrement,
+}: {
+  label: string;
+  display: string;
+  isLast: boolean;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}) {
+  const full = `${label}, peu importe la marque`;
+  const ghost = 'grid size-8 shrink-0 place-items-center rounded-full text-ink hover:bg-surface-2';
+  return (
+    <div
+      role="group"
+      aria-label={`Quantité de ${full}`}
+      className="flex items-center gap-1.5 text-sm text-ink-soft"
+    >
+      <Check size={15} aria-hidden className="shrink-0" />
+      <span className="flex-1">
+        Toutes marques :{' '}
+        <output aria-live="polite" className="font-semibold text-ink tabular">
+          {display}
+        </output>
+      </span>
+      <button
+        type="button"
+        onClick={onDecrement}
+        className={ghost}
+        aria-label={isLast ? `Retirer ${full} de la liste` : `Diminuer la quantité de ${full}`}
+      >
+        {isLast ? <Trash2 size={15} aria-hidden /> : <Minus size={15} aria-hidden />}
+      </button>
+      <button
+        type="button"
+        onClick={onIncrement}
+        className={ghost}
+        aria-label={`Augmenter la quantité de ${full}`}
+      >
+        <Plus size={15} aria-hidden />
+      </button>
+    </div>
+  );
 }
 
 export const ProductCard = memo(function ProductCard({
@@ -96,48 +148,46 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      <PriceLabel value={price} />
-
+      {/* Comme sur une étiquette de rayon : le prix à gauche, l'action à droite. */}
       <div className="mt-auto space-y-2">
-        {productItem ? (
-          <QuantityStepper
-            label={title}
-            display={productQuantityLabel(product, productItem.quantity)}
-            isLast={isLastStep(productItem)}
-            onIncrement={() => onChangeQuantity(productItem.id, 1)}
-            onDecrement={() => onChangeQuantity(productItem.id, -1)}
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => onAdd(product)}
-            aria-label={`Ajouter ${title} à la liste`}
-            className="flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 font-medium text-on-primary hover:opacity-90 active:scale-[0.98]"
-          >
-            <Plus size={18} aria-hidden />
-            Ajouter
-          </button>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <PriceLabel value={price} />
+          {productItem ? (
+            <QuantityStepper
+              label={title}
+              display={productQuantityLabel(product, productItem.quantity)}
+              isLast={isLastStep(productItem)}
+              onIncrement={() => onChangeQuantity(productItem.id, 1)}
+              onDecrement={() => onChangeQuantity(productItem.id, -1)}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => onAdd(product)}
+              aria-label={`Ajouter ${title} à la liste`}
+              className="flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 font-medium text-on-primary hover:opacity-90 active:scale-[0.98]"
+            >
+              <Plus size={18} aria-hidden />
+              Ajouter
+            </button>
+          )}
+        </div>
 
         {!onlyOne &&
           (genericItem && group ? (
-            <div className="flex items-center gap-2 text-sm">
-              <QuantityStepper
-                size="sm"
-                label={`${genericLabel}, peu importe la marque`}
-                display={formatRefQuantity(genericItem.quantity, group.refUnit)}
-                isLast={isLastStep(genericItem)}
-                onIncrement={() => onChangeQuantity(genericItem.id, 1)}
-                onDecrement={() => onChangeQuantity(genericItem.id, -1)}
-              />
-              <span className="text-ink-soft">toutes marques</span>
-            </div>
+            <GenericLine
+              label={genericLabel}
+              display={formatRefQuantity(genericItem.quantity, group.refUnit)}
+              isLast={isLastStep(genericItem)}
+              onIncrement={() => onChangeQuantity(genericItem.id, 1)}
+              onDecrement={() => onChangeQuantity(genericItem.id, -1)}
+            />
           ) : (
             <button
               type="button"
               onClick={() => onAddGeneric(product)}
               aria-label={`Ajouter ${genericLabel}, peu importe la marque`}
-              className="text-sm font-medium text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink hover:decoration-ink"
+              className="block text-left text-sm font-medium text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink hover:decoration-ink"
             >
               Peu importe la marque
             </button>

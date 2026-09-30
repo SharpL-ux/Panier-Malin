@@ -245,7 +245,7 @@ function CustomProductForm({ onClose, initialName = '', initialCategory }: Props
             }}
             aria-invalid={invalid('ean')}
             aria-describedby={errors.ean ? `${ids.ean}-error` : undefined}
-            placeholder="3 xxxxxx xxxxxx"
+            placeholder="8 ou 13 chiffres"
             className={`${input} tabular`}
           />
           <button

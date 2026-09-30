@@ -13,16 +13,18 @@ export function EnseignePicker() {
       <label htmlFor={id} className="sr-only">
         Mon magasin
       </label>
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-2.5 size-3 rounded-full border border-line-strong"
-        style={{ background: selected?.badgeBg ?? 'transparent' }}
-      />
+      {selected && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-2.5 size-3 rounded-full border border-line-strong"
+          style={{ background: selected.badgeBg }}
+        />
+      )}
       <select
         id={id}
         value={enseigne}
         onChange={(e) => setEnseigne(isEnseigneId(e.target.value) ? e.target.value : 'all')}
-        className="h-10 appearance-none rounded-full border border-line-strong bg-surface pr-8 pl-7 text-sm font-medium"
+        className={`h-10 appearance-none rounded-full border border-line-strong bg-surface pr-8 text-sm font-medium ${selected ? 'pl-7' : 'pl-3.5'}`}
       >
         <option value="all">Tous les magasins</option>
         {ENSEIGNES.map((e) => (
