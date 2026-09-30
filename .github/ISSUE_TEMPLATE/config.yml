@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Ajouter ou corriger un prix
+    url: https://prices.openfoodfacts.org
+    about: Les prix viennent d'Open Prices. Un prix ajouté là-bas profite à tout le monde, dans cette application et ailleurs.
+  - name: Corriger une fiche produit (nom, photo, code-barres)
+    url: https://world.openfoodfacts.org
+    about: Les fiches produits viennent d'Open Food Facts, modifiables par tous.

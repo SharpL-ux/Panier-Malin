@@ -1,0 +1,46 @@
+name: Signaler un problème de prix
+description: Un prix affiché dans l'application semble faux, mal rattaché ou mal converti.
+title: '[Prix] '
+labels: ['prix']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Les prix viennent d'[Open Prices](https://prices.openfoodfacts.org), une base collaborative.
+        **Pour ajouter ou corriger un relevé, le plus utile est de le faire directement sur Open Prices.**
+        Ce formulaire sert aux problèmes propres à l'application : prix rattaché au mauvais produit ou au mauvais magasin, erreur de conversion au kilo ou au litre, prix ancien présenté comme récent…
+  - type: input
+    id: produit
+    attributes:
+      label: Produit concerné
+      placeholder: Beurre doux Président 250 g
+    validations:
+      required: true
+  - type: input
+    id: magasin
+    attributes:
+      label: Magasin
+      placeholder: Carrefour Market, rue de la Paix, Paris
+  - type: input
+    id: prix-affiche
+    attributes:
+      label: Prix affiché dans l'application
+      placeholder: 2,45 € (2,45 €/pièce)
+    validations:
+      required: true
+  - type: input
+    id: prix-constate
+    attributes:
+      label: Prix constaté en magasin, et à quelle date
+      placeholder: 2,69 € le 28/09/2026
+  - type: input
+    id: lien-open-prices
+    attributes:
+      label: Lien vers le relevé sur Open Prices (si vous l'avez)
+  - type: textarea
+    id: details
+    attributes:
+      label: Ce qui ne va pas
+      description: Décrivez ce que vous attendiez et ce que l'application affiche.
+    validations:
+      required: true

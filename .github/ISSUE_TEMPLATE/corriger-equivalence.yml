@@ -1,0 +1,36 @@
+name: Corriger une équivalence
+description: Deux produits comparés entre eux ne sont pas interchangeables, ou un produit devrait l'être.
+title: '[Équivalence] '
+labels: ['catalogue', 'équivalence']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Les produits d'un même groupe d'équivalence sont comparés entre magasins quand on choisit « Peu importe la marque ».
+        Exemple : tous les laits demi-écrémés UHT, quelle que soit la marque, mais pas le lait bio, qui a son propre groupe.
+  - type: dropdown
+    id: probleme
+    attributes:
+      label: Type de problème
+      options:
+        - Ces produits ne sont pas interchangeables
+        - Ce produit devrait rejoindre un groupe existant
+        - Il faudrait créer un nouveau groupe
+        - Le format ou l'unité de comparaison est faux
+        - Autre
+    validations:
+      required: true
+  - type: textarea
+    id: produits
+    attributes:
+      label: Produits concernés
+      description: Nom, marque et format, ou identifiant du produit dans src/data/products.json.
+    validations:
+      required: true
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Votre proposition
+      placeholder: Séparer les coquillettes et les coquillettes complètes, qui n'ont pas le même usage.
+    validations:
+      required: true
