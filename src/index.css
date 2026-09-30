@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Jetons de couleur. Le fond reste neutre et froid : la couleur est réservée aux
+ * rayons (une teinte par catégorie) et au code prix (vert = moins cher, rouge = plus cher).
+ */
+:root {
+  --paper: #eef2f1;
+  --surface: #ffffff;
+  --surface-2: #f6f8f7;
+  --ink: #17222c;
+  --ink-soft: #4a5864;
+  --line: #d3dbd8;
+  --line-strong: #9aa8a4;
+  --cheap: #0d7a4a;
+  --cheap-bg: #e2f3e9;
+  --dear: #b3261e;
+  --dear-bg: #fbe7e5;
+  --focus: #1b6fe0;
+  --primary: #17222c;
+  --on-primary: #ffffff;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0f1820;
+  --surface: #16222c;
+  --surface-2: #1b2a35;
+  --ink: #e7edeb;
+  --ink-soft: #a9b7b3;
+  --line: #2b3b47;
+  --line-strong: #4f6270;
+  --cheap: #4cc38a;
+  --cheap-bg: #12301f;
+  --dear: #f2877d;
+  --dear-bg: #3a1a17;
+  --focus: #6aa8ff;
+  --primary: #e7edeb;
+  --on-primary: #10202b;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Barlow', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, system-ui, sans-serif;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-cheap: var(--cheap);
+  --color-cheap-bg: var(--cheap-bg);
+  --color-dear: var(--dear);
+  --color-dear-bg: var(--dear-bg);
+  --color-focus: var(--focus);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Teinte de rayon : --cat est posé en style inline par chaque composant. */
+@utility cat-tint {
+  background: color-mix(in srgb, var(--cat) 16%, var(--surface));
+}
+
+@utility cat-strip {
+  box-shadow: inset 4px 0 0 var(--cat);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+dialog::backdrop {
+  background: rgb(15 24 32 / 0.55);
+}
