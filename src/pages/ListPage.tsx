@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { Link } from 'react-router';
 import { QuantityStepper } from '../components/ui/QuantityStepper';
 import { CATEGORIES } from '../data/categories';
@@ -12,7 +11,7 @@ import { formatPack, formatRefQuantity } from '../utils/units';
  * L'étape 2 ajoutera le nom modifiable, les notes, les cases à cocher, l'historique et les favoris.
  */
 export function ListPage() {
-  const { list, changeQuantity, removeItem } = useShoppingList();
+  const { list, changeQuantity } = useShoppingList();
   const { catalog } = useCatalog();
 
   const describe = (item: ListItem) => {
@@ -37,7 +36,7 @@ export function ListPage() {
     const group = catalog.groupById.get(item.target.groupId);
     return {
       title: group?.label ?? 'Groupe introuvable',
-      detail: 'Peu importe la marque',
+      detail: 'Toutes marques',
       icon: CATEGORIES.find((c) => c.id === item.categoryId)?.icon ?? '🛒',
       qty: group ? formatRefQuantity(item.quantity, group.refUnit) : String(item.quantity),
     };
@@ -88,7 +87,7 @@ export function ListPage() {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium">{d.title}</p>
-                        <p className="truncate text-sm text-ink-soft">{d.detail}</p>
+                        <p className="text-sm text-ink-soft">{d.detail}</p>
                       </div>
                       <QuantityStepper
                         size="sm"
@@ -98,14 +97,6 @@ export function ListPage() {
                         onIncrement={() => changeQuantity(item.id, 1)}
                         onDecrement={() => changeQuantity(item.id, -1)}
                       />
-                      <button
-                        type="button"
-                        onClick={() => removeItem(item.id)}
-                        aria-label={`Supprimer ${d.title} de la liste`}
-                        className="grid size-9 place-items-center rounded-full text-ink-soft hover:bg-surface-2 hover:text-ink"
-                      >
-                        <X size={18} aria-hidden />
-                      </button>
                     </li>
                   );
                 })}

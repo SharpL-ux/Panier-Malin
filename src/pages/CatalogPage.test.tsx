@@ -88,7 +88,7 @@ describe('catalogue', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: /^Semaine du \d{2}\/\d{2}\/\d{4}$/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Peu importe la marque')).toBeInTheDocument();
+    expect(screen.getByText('Toutes marques')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: /Crèmerie/ })).toBeInTheDocument();
   });
 });

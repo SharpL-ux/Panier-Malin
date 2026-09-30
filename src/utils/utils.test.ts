@@ -96,6 +96,10 @@ describe('unités et conditionnements', () => {
     expect(formatPack({ count: 1, size: 12, unit: 'piece' })).toBe('12 pièces');
     expect(formatRefQuantity(1.5, 'kg')).toBe('1,5 kg');
     expect(formatRefQuantity(1, 'piece')).toBe('1 pièce');
+    expect(formatRefQuantity(0.2, 'kg')).toBe('200 g');
+    expect(formatRefQuantity(0.75, 'L')).toBe('75 cl');
+    expect(formatRefQuantity(0.075, 'L')).toBe('75 ml');
+    expect(formatRefQuantity(1.98, 'L')).toBe('1,98 L');
   });
 });
 

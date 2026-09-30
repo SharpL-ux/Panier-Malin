@@ -43,6 +43,8 @@ export const REF_UNIT_LABEL: Record<RefUnit, string> = { kg: 'kg', L: 'L', piece
 
 /** Quantité exprimée dans une unité de référence : « 1,5 kg », « 2 L », « 3 pièces ». */
 export function formatRefQuantity(value: number, refUnit: RefUnit): string {
+  if (refUnit === 'kg' && value < 1) return `${Math.round(value * 1000)} g`;
+  if (refUnit === 'L' && value < 1) return formatSize(Math.round(value * 1000), 'ml');
   if (refUnit === 'piece')
     return value > 1 ? `${NUMBER.format(value)} pièces` : `${NUMBER.format(value)} pièce`;
   return `${NUMBER.format(value)} ${REF_UNIT_LABEL[refUnit]}`;
