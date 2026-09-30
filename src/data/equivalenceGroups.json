@@ -1,0 +1,1280 @@
+[
+  {
+    "id": "pommes",
+    "label": "Pommes",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "bananes",
+    "label": "Bananes",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "oranges",
+    "label": "Oranges",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "citrons",
+    "label": "Citrons",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poires",
+    "label": "Poires",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "clementines",
+    "label": "Clémentines",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "raisin-blanc",
+    "label": "Raisin blanc",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "kiwis",
+    "label": "Kiwis",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "fraises",
+    "label": "Fraises",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "avocats",
+    "label": "Avocats",
+    "categoryId": "fruits",
+    "refUnit": "piece"
+  },
+  {
+    "id": "mangues",
+    "label": "Mangues",
+    "categoryId": "fruits",
+    "refUnit": "piece"
+  },
+  {
+    "id": "ananas",
+    "label": "Ananas",
+    "categoryId": "fruits",
+    "refUnit": "piece"
+  },
+  {
+    "id": "peches",
+    "label": "Pêches jaunes",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "nectarines",
+    "label": "Nectarines",
+    "categoryId": "fruits",
+    "refUnit": "kg"
+  },
+  {
+    "id": "melon",
+    "label": "Melon charentais",
+    "categoryId": "fruits",
+    "refUnit": "piece"
+  },
+  {
+    "id": "pommes-de-terre",
+    "label": "Pommes de terre",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "carottes",
+    "label": "Carottes",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "tomates",
+    "label": "Tomates",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "tomates-cerises",
+    "label": "Tomates cerises",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "courgettes",
+    "label": "Courgettes",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "oignons-jaunes",
+    "label": "Oignons jaunes",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "ail",
+    "label": "Ail",
+    "categoryId": "legumes",
+    "refUnit": "piece"
+  },
+  {
+    "id": "laitue",
+    "label": "Salade laitue",
+    "categoryId": "legumes",
+    "refUnit": "piece"
+  },
+  {
+    "id": "concombre",
+    "label": "Concombre",
+    "categoryId": "legumes",
+    "refUnit": "piece"
+  },
+  {
+    "id": "poivrons",
+    "label": "Poivrons",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "brocoli",
+    "label": "Brocoli",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "champignons-paris",
+    "label": "Champignons de Paris",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poireaux",
+    "label": "Poireaux",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "haricots-verts-frais",
+    "label": "Haricots verts",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "aubergines",
+    "label": "Aubergines",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "patates-douces",
+    "label": "Patates douces",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "salade-sachet",
+    "label": "Salade lavée en sachet",
+    "categoryId": "legumes",
+    "refUnit": "kg"
+  },
+  {
+    "id": "baguette",
+    "label": "Baguette",
+    "categoryId": "boulangerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "baguette-tradition",
+    "label": "Baguette tradition",
+    "categoryId": "boulangerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "pain-de-mie",
+    "label": "Pain de mie",
+    "categoryId": "boulangerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "croissants",
+    "label": "Croissants pur beurre",
+    "categoryId": "boulangerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "pains-au-chocolat",
+    "label": "Pains au chocolat",
+    "categoryId": "boulangerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "brioche-tranchee",
+    "label": "Brioche tranchée",
+    "categoryId": "boulangerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "pains-au-lait",
+    "label": "Pains au lait",
+    "categoryId": "boulangerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "biscottes",
+    "label": "Biscottes",
+    "categoryId": "boulangerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "steak-hache-5",
+    "label": "Steaks hachés 5 % MG",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "steak-hache-15",
+    "label": "Steaks hachés 15 % MG",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "boeuf-bourguignon",
+    "label": "Bœuf à bourguignon",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "entrecote",
+    "label": "Entrecôte",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cotes-de-porc",
+    "label": "Côtes de porc",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "roti-de-porc",
+    "label": "Rôti de porc",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "merguez",
+    "label": "Merguez",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "chipolatas",
+    "label": "Chipolatas",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "gigot-agneau",
+    "label": "Gigot d'agneau",
+    "categoryId": "boucherie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "filets-de-poulet",
+    "label": "Filets de poulet",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poulet-entier",
+    "label": "Poulet entier prêt à cuire",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cuisses-de-poulet",
+    "label": "Cuisses de poulet",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "escalopes-de-dinde",
+    "label": "Escalopes de dinde",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cordons-bleus",
+    "label": "Cordons bleus de dinde",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "aiguillettes-de-poulet",
+    "label": "Aiguillettes de poulet",
+    "categoryId": "volaille",
+    "refUnit": "kg"
+  },
+  {
+    "id": "paves-de-saumon",
+    "label": "Pavés de saumon",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "saumon-fume",
+    "label": "Saumon fumé",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "filets-de-cabillaud",
+    "label": "Filets de cabillaud",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "crevettes-cuites",
+    "label": "Crevettes cuites",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "surimi",
+    "label": "Bâtonnets de surimi",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "moules",
+    "label": "Moules de bouchot",
+    "categoryId": "poissonnerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "jambon-blanc",
+    "label": "Jambon blanc",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "jambon-cru",
+    "label": "Jambon cru",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lardons-fumes",
+    "label": "Lardons fumés",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "saucisson-sec",
+    "label": "Saucisson sec",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "saucisses-strasbourg",
+    "label": "Saucisses de Strasbourg",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "rillettes",
+    "label": "Rillettes du Mans",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "taboule",
+    "label": "Taboulé oriental",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "pizza-fraiche",
+    "label": "Pizza fraîche jambon fromage",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lasagnes",
+    "label": "Lasagnes à la bolognaise",
+    "categoryId": "charcuterie-traiteur",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lait-demi-ecreme",
+    "label": "Lait demi-écrémé UHT",
+    "categoryId": "cremerie",
+    "refUnit": "L"
+  },
+  {
+    "id": "lait-entier",
+    "label": "Lait entier UHT",
+    "categoryId": "cremerie",
+    "refUnit": "L"
+  },
+  {
+    "id": "lait-demi-ecreme-bio",
+    "label": "Lait demi-écrémé bio",
+    "categoryId": "cremerie",
+    "refUnit": "L"
+  },
+  {
+    "id": "beurre-doux",
+    "label": "Beurre doux",
+    "categoryId": "cremerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "beurre-demi-sel",
+    "label": "Beurre demi-sel",
+    "categoryId": "cremerie",
+    "refUnit": "kg"
+  },
+  {
+    "id": "creme-epaisse",
+    "label": "Crème fraîche épaisse",
+    "categoryId": "cremerie",
+    "refUnit": "L"
+  },
+  {
+    "id": "creme-liquide",
+    "label": "Crème liquide entière",
+    "categoryId": "cremerie",
+    "refUnit": "L"
+  },
+  {
+    "id": "oeufs-plein-air",
+    "label": "Œufs de plein air",
+    "categoryId": "cremerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "oeufs-bio",
+    "label": "Œufs bio",
+    "categoryId": "cremerie",
+    "refUnit": "piece"
+  },
+  {
+    "id": "emmental-rape",
+    "label": "Emmental râpé",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "camembert",
+    "label": "Camembert",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "comte",
+    "label": "Comté AOP",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "mozzarella",
+    "label": "Mozzarella",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "fromage-portions",
+    "label": "Fromage fondu en portions",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "mini-fromages",
+    "label": "Mini fromages ronds",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "buche-chevre",
+    "label": "Bûche de chèvre",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "raclette",
+    "label": "Fromage à raclette en tranches",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "feta",
+    "label": "Feta AOP",
+    "categoryId": "fromages",
+    "refUnit": "kg"
+  },
+  {
+    "id": "yaourts-nature",
+    "label": "Yaourts nature",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "fromage-blanc",
+    "label": "Fromage blanc nature",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "creme-dessert-chocolat",
+    "label": "Crème dessert au chocolat",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "yaourts-grecs",
+    "label": "Yaourts à la grecque",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "yaourts-bifidus",
+    "label": "Yaourts au bifidus nature",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "riz-au-lait",
+    "label": "Riz au lait",
+    "categoryId": "yaourts-desserts",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cereales-chocolat",
+    "label": "Céréales au chocolat",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "corn-flakes",
+    "label": "Pétales de maïs nature",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "muesli",
+    "label": "Muesli croustillant",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "flocons-avoine",
+    "label": "Flocons d'avoine",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "pate-a-tartiner",
+    "label": "Pâte à tartiner noisettes et cacao",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "confiture-fraise",
+    "label": "Confiture de fraises",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "miel",
+    "label": "Miel toutes fleurs",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "chocolat-en-poudre",
+    "label": "Chocolat en poudre",
+    "categoryId": "petit-dejeuner",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cafe-moulu",
+    "label": "Café moulu",
+    "categoryId": "cafe-the",
+    "refUnit": "kg"
+  },
+  {
+    "id": "capsules-espresso",
+    "label": "Capsules espresso compatibles",
+    "categoryId": "cafe-the",
+    "refUnit": "piece"
+  },
+  {
+    "id": "cafe-soluble",
+    "label": "Café soluble",
+    "categoryId": "cafe-the",
+    "refUnit": "kg"
+  },
+  {
+    "id": "the-noir",
+    "label": "Thé noir en sachets",
+    "categoryId": "cafe-the",
+    "refUnit": "piece"
+  },
+  {
+    "id": "infusion",
+    "label": "Infusion en sachets",
+    "categoryId": "cafe-the",
+    "refUnit": "piece"
+  },
+  {
+    "id": "spaghetti",
+    "label": "Spaghetti",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "coquillettes",
+    "label": "Coquillettes",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "penne",
+    "label": "Penne rigate",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "riz-long",
+    "label": "Riz long grain",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "riz-basmati",
+    "label": "Riz basmati",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "coulis-tomate",
+    "label": "Coulis de tomate",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "sauce-bolognaise",
+    "label": "Sauce bolognaise",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "huile-tournesol",
+    "label": "Huile de tournesol",
+    "categoryId": "epicerie-salee",
+    "refUnit": "L"
+  },
+  {
+    "id": "huile-olive",
+    "label": "Huile d'olive vierge extra",
+    "categoryId": "epicerie-salee",
+    "refUnit": "L"
+  },
+  {
+    "id": "thon-naturel",
+    "label": "Thon au naturel",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "sardines",
+    "label": "Sardines à l'huile",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "mais-doux",
+    "label": "Maïs doux",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "petits-pois-carottes",
+    "label": "Petits pois et carottes",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "moutarde",
+    "label": "Moutarde de Dijon",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "mayonnaise",
+    "label": "Mayonnaise",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "ketchup",
+    "label": "Ketchup",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "sel-fin",
+    "label": "Sel fin",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poivre-noir",
+    "label": "Poivre noir moulu",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "bouillon-volaille",
+    "label": "Bouillon de volaille en cubes",
+    "categoryId": "epicerie-salee",
+    "refUnit": "piece"
+  },
+  {
+    "id": "chips-nature",
+    "label": "Chips nature",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lentilles-vertes",
+    "label": "Lentilles vertes",
+    "categoryId": "epicerie-salee",
+    "refUnit": "kg"
+  },
+  {
+    "id": "petits-beurres",
+    "label": "Petits beurres",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "biscuits-fourres-chocolat",
+    "label": "Biscuits fourrés au chocolat",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "cookies",
+    "label": "Cookies aux pépites de chocolat",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "chocolat-noir",
+    "label": "Chocolat noir 70 %",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "chocolat-lait",
+    "label": "Chocolat au lait",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "sucre-poudre",
+    "label": "Sucre en poudre",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "farine-t45",
+    "label": "Farine de blé T45",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "levure-chimique",
+    "label": "Levure chimique",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "compote-pomme",
+    "label": "Compote de pommes",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "madeleines",
+    "label": "Madeleines",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "bonbons-gelifies",
+    "label": "Bonbons gélifiés",
+    "categoryId": "epicerie-sucree",
+    "refUnit": "kg"
+  },
+  {
+    "id": "sauce-soja",
+    "label": "Sauce soja salée",
+    "categoryId": "produits-du-monde",
+    "refUnit": "L"
+  },
+  {
+    "id": "nouilles-oeufs",
+    "label": "Nouilles chinoises aux œufs",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lait-de-coco",
+    "label": "Lait de coco",
+    "categoryId": "produits-du-monde",
+    "refUnit": "L"
+  },
+  {
+    "id": "riz-jasmin",
+    "label": "Riz parfumé thaï (jasmin)",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "couscous",
+    "label": "Couscous grain moyen",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "harissa",
+    "label": "Harissa",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "pois-chiches",
+    "label": "Pois chiches en conserve",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "tortillas",
+    "label": "Tortillas de blé",
+    "categoryId": "produits-du-monde",
+    "refUnit": "piece"
+  },
+  {
+    "id": "bananes-plantain",
+    "label": "Bananes plantain",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "semoule-fine",
+    "label": "Semoule de blé fine",
+    "categoryId": "produits-du-monde",
+    "refUnit": "kg"
+  },
+  {
+    "id": "merguez-halal",
+    "label": "Merguez halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "blanc-dinde-halal",
+    "label": "Blanc de dinde halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "saucisses-volaille-halal",
+    "label": "Saucisses de volaille halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "chorizo-halal",
+    "label": "Chorizo de bœuf halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "viande-hachee-halal",
+    "label": "Viande hachée de bœuf halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poulet-entier-halal",
+    "label": "Poulet entier halal",
+    "categoryId": "halal",
+    "refUnit": "kg"
+  },
+  {
+    "id": "eau-plate",
+    "label": "Eau plate",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "eau-gazeuse",
+    "label": "Eau gazeuse",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "cola",
+    "label": "Cola",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "limonade",
+    "label": "Limonade",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "jus-orange",
+    "label": "Pur jus d'orange",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "jus-multifruits",
+    "label": "Jus multifruits",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "sirop-grenadine",
+    "label": "Sirop de grenadine",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "the-glace",
+    "label": "Boisson au thé glacé pêche",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "soda-orange",
+    "label": "Soda à l'orange",
+    "categoryId": "boissons",
+    "refUnit": "L"
+  },
+  {
+    "id": "biere-blonde",
+    "label": "Bière blonde",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "biere-abbaye",
+    "label": "Bière d'abbaye",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "vin-rouge-bordeaux",
+    "label": "Vin rouge Bordeaux AOP",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "vin-rose",
+    "label": "Vin rosé",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "pastis",
+    "label": "Pastis",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "whisky",
+    "label": "Whisky blended",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "cidre-brut",
+    "label": "Cidre brut",
+    "categoryId": "alcools",
+    "refUnit": "L"
+  },
+  {
+    "id": "couches-t4",
+    "label": "Couches taille 4 (9-14 kg)",
+    "categoryId": "bebe",
+    "refUnit": "piece"
+  },
+  {
+    "id": "couches-t3",
+    "label": "Couches taille 3 (6-10 kg)",
+    "categoryId": "bebe",
+    "refUnit": "piece"
+  },
+  {
+    "id": "lait-infantile-2",
+    "label": "Lait infantile 2e âge",
+    "categoryId": "bebe",
+    "refUnit": "kg"
+  },
+  {
+    "id": "petits-pots-legumes",
+    "label": "Petits pots de légumes",
+    "categoryId": "bebe",
+    "refUnit": "kg"
+  },
+  {
+    "id": "lingettes-bebe",
+    "label": "Lingettes bébé",
+    "categoryId": "bebe",
+    "refUnit": "piece"
+  },
+  {
+    "id": "dentifrice",
+    "label": "Dentifrice",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "L"
+  },
+  {
+    "id": "gel-douche",
+    "label": "Gel douche",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "L"
+  },
+  {
+    "id": "shampooing",
+    "label": "Shampooing",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "L"
+  },
+  {
+    "id": "deodorant-bille",
+    "label": "Déodorant bille",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "L"
+  },
+  {
+    "id": "serviettes-hygieniques",
+    "label": "Serviettes hygiéniques",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "piece"
+  },
+  {
+    "id": "rasoirs-jetables",
+    "label": "Rasoirs jetables",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "piece"
+  },
+  {
+    "id": "savon-liquide",
+    "label": "Savon liquide pour les mains",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "L"
+  },
+  {
+    "id": "coton-tiges",
+    "label": "Cotons-tiges",
+    "categoryId": "hygiene-beaute",
+    "refUnit": "piece"
+  },
+  {
+    "id": "lessive-liquide",
+    "label": "Lessive liquide",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "liquide-vaisselle",
+    "label": "Liquide vaisselle",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "tablettes-lave-vaisselle",
+    "label": "Tablettes lave-vaisselle",
+    "categoryId": "entretien",
+    "refUnit": "piece"
+  },
+  {
+    "id": "nettoyant-multi-surfaces",
+    "label": "Nettoyant multi-surfaces",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "eau-de-javel",
+    "label": "Eau de Javel",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "gel-wc",
+    "label": "Gel WC",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "eponges",
+    "label": "Éponges grattantes",
+    "categoryId": "entretien",
+    "refUnit": "piece"
+  },
+  {
+    "id": "sacs-poubelle-30l",
+    "label": "Sacs poubelle 30 L",
+    "categoryId": "entretien",
+    "refUnit": "piece"
+  },
+  {
+    "id": "adoucissant",
+    "label": "Adoucissant",
+    "categoryId": "entretien",
+    "refUnit": "L"
+  },
+  {
+    "id": "papier-toilette",
+    "label": "Papier toilette",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "essuie-tout",
+    "label": "Essuie-tout",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "mouchoirs",
+    "label": "Mouchoirs en étuis",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "film-etirable",
+    "label": "Film étirable 30 m",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "papier-aluminium",
+    "label": "Papier aluminium 20 m",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "piles-aa",
+    "label": "Piles AA",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "ramette-a4",
+    "label": "Ramette de papier A4",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "stylos-bille",
+    "label": "Stylos bille",
+    "categoryId": "papeterie-maison",
+    "refUnit": "piece"
+  },
+  {
+    "id": "croquettes-chat",
+    "label": "Croquettes pour chat adulte",
+    "categoryId": "animaux",
+    "refUnit": "kg"
+  },
+  {
+    "id": "patee-chat",
+    "label": "Pâtée pour chat en sachets",
+    "categoryId": "animaux",
+    "refUnit": "kg"
+  },
+  {
+    "id": "croquettes-chien",
+    "label": "Croquettes pour chien adulte",
+    "categoryId": "animaux",
+    "refUnit": "kg"
+  },
+  {
+    "id": "litiere-chat",
+    "label": "Litière pour chat",
+    "categoryId": "animaux",
+    "refUnit": "L"
+  },
+  {
+    "id": "frites-four",
+    "label": "Frites au four",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "pizza-4-fromages",
+    "label": "Pizza quatre fromages",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "poisson-pane",
+    "label": "Poisson pané",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "epinards-haches",
+    "label": "Épinards hachés",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "haricots-verts-surgeles",
+    "label": "Haricots verts extra-fins surgelés",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "glace-vanille",
+    "label": "Crème glacée à la vanille",
+    "categoryId": "surgeles",
+    "refUnit": "L"
+  },
+  {
+    "id": "steaks-haches-surgeles",
+    "label": "Steaks hachés surgelés",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  },
+  {
+    "id": "nems-poulet",
+    "label": "Nems au poulet",
+    "categoryId": "surgeles",
+    "refUnit": "kg"
+  }
+]
