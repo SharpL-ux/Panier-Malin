@@ -57,7 +57,7 @@ export function CatalogToolbar({
 }: Props) {
   const searchId = useId();
   const sortId = useId();
-  const noPriceHint = 'Disponible dès que les prix Open Prices seront chargés';
+  const noPriceHint = 'Choisissez vos magasins pour filtrer et trier par prix';
   return (
     <div className="space-y-3">
       <div className="flex gap-2">

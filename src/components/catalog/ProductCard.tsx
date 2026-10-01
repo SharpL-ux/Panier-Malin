@@ -1,4 +1,4 @@
-import { Plus, Star } from 'lucide-react';
+import { Pencil, Plus, Star } from 'lucide-react';
 import { memo, type CSSProperties } from 'react';
 import { getCategory } from '../../data/categories';
 import type { Product, StoreReference } from '../../types/catalog';
@@ -17,6 +17,7 @@ interface Props {
   item?: ListItem;
   isFavorite: boolean;
   onToggleFavorite: (productId: string) => void;
+  onEditPrice: (product: Product) => void;
   onAdd: (product: Product) => void;
   onChangeQuantity: (itemId: string, steps: number) => void;
 }
@@ -51,6 +52,7 @@ export const ProductCard = memo(function ProductCard({
   item,
   isFavorite,
   onToggleFavorite,
+  onEditPrice,
   onAdd,
   onChangeQuantity,
 }: Props) {
@@ -126,8 +128,19 @@ export const ProductCard = memo(function ProductCard({
       </div>
 
       {/* Comme sur une étiquette de rayon : le prix à gauche, l'action à droite. */}
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
-        <PriceLabel value={price} />
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-2">
+        <div className="space-y-1">
+          <PriceLabel value={price} />
+          <button
+            type="button"
+            onClick={() => onEditPrice(product)}
+            aria-label={`Saisir un prix pour ${title}`}
+            className="flex items-center gap-1 text-xs font-medium text-ink-soft underline decoration-line-strong underline-offset-2 hover:text-ink"
+          >
+            <Pencil size={12} aria-hidden />
+            {price ? 'Votre prix' : 'Saisir un prix'}
+          </button>
+        </div>
         {item ? (
           <QuantityStepper
             label={title}

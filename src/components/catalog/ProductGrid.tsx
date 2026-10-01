@@ -1,4 +1,10 @@
 import { useMemo, useState } from 'react';
+import { useOffers } from '../../hooks/useOffers';
+import { unitCents } from '../../services/pricing';
+import { storeLabel } from '../../services/stores';
+import { refUnitOf } from '../../utils/units';
+import { PriceDialog } from '../prices/PriceDialog';
+import type { PriceLabelValue } from '../ui/PriceLabel';
 import { getEnseigne } from '../../data/enseignes';
 import { useCatalog, useSettings, useShoppingList } from '../../hooks/useAppContexts';
 import { referenceAt } from '../../services/catalog';
@@ -14,12 +20,32 @@ export const PAGE_SIZE = 48;
  */
 export function ProductGrid({ products }: { products: Product[] }) {
   const [limit, setLimit] = useState(PAGE_SIZE);
-  const { enseigne } = useSettings();
+  const { enseigne, stores } = useSettings();
+  const { offerFor } = useOffers();
+  const [editing, setEditing] = useState<Product | null>(null);
+  const storeById = new Map(stores.map((st) => [st.id, st]));
   const { favorites, toggleFavorite } = useCatalog();
   const { list, addProduct, changeQuantity } = useShoppingList();
   const visible = useMemo(() => products.slice(0, limit), [products, limit]);
   const remaining = products.length - visible.length;
   const enseigneLabel = enseigne === 'all' ? null : getEnseigne(enseigne).label;
+
+  const priceOf = (product: Product): PriceLabelValue | null => {
+    const offer = offerFor(product);
+    if (!offer) return null;
+    const { observation } = offer.selected;
+    const store = storeById.get(offer.storeId);
+    return {
+      cents: offer.cents,
+      unitCents: unitCents(product, observation),
+      refUnit: refUnitOf(product.pack),
+      storeLabel: store ? storeLabel(store) : undefined,
+      date: observation.date,
+      source: observation.source,
+      stale: offer.selected.stale,
+      fallbackFrom: observation.fallbackFrom,
+    };
+  };
 
   return (
     <div>
@@ -31,10 +57,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 product={product}
                 enseigneLabel={enseigneLabel}
                 reference={enseigne === 'all' ? undefined : referenceAt(product, enseigne)}
-                price={null}
+                price={priceOf(product)}
                 item={findItem(list, product.id)}
                 isFavorite={favorites.has(product.id)}
                 onToggleFavorite={toggleFavorite}
+                onEditPrice={setEditing}
                 onAdd={addProduct}
                 onChangeQuantity={changeQuantity}
               />
@@ -42,6 +69,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
           </li>
         ))}
       </ul>
+      {editing && <PriceDialog product={editing} open onClose={() => setEditing(null)} />}
       {remaining > 0 && (
         <div className="mt-6 flex justify-center">
           <button

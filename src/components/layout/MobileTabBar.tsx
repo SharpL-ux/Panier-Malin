@@ -10,7 +10,10 @@ export function MobileTabBar() {
       aria-label="Navigation principale"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-2">
+      <ul
+        className="mx-auto grid max-w-lg"
+        style={{ gridTemplateColumns: `repeat(${NAV_ITEMS.length}, 1fr)` }}
+      >
         {NAV_ITEMS.map((item) => (
           <li key={item.to}>
             <NavLink

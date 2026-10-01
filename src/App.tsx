@@ -4,6 +4,7 @@ import { AppProviders } from './components/providers/AppProviders';
 import { CatalogPage } from './pages/CatalogPage';
 import { ListPage } from './pages/ListPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { StoresPage } from './pages/StoresPage';
 
 /**
  * Routage par ancre (#/liste) : GitHub Pages ne sait pas renvoyer index.html pour
@@ -17,6 +18,7 @@ export function App() {
           <Route element={<AppShell />}>
             <Route index element={<CatalogPage />} />
             <Route path="liste" element={<ListPage />} />
+            <Route path="magasins" element={<StoresPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

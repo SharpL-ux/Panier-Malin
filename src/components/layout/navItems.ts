@@ -1,4 +1,4 @@
-import { LayoutGrid, ListChecks, type LucideIcon } from 'lucide-react';
+import { LayoutGrid, ListChecks, Store, type LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   to: string;
@@ -8,8 +8,9 @@ export interface NavItem {
   showCount?: boolean;
 }
 
-/** Les écrans Comparer et Mes magasins s'ajouteront ici aux étapes suivantes. */
+/** Entrées de navigation, dans la barre du haut sur ordinateur et en bas sur mobile. */
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Catalogue', icon: LayoutGrid },
   { to: '/liste', label: 'Ma liste', icon: ListChecks, showCount: true },
+  { to: '/magasins', label: 'Magasins', icon: Store },
 ];

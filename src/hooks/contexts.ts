@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import type { Catalog } from '../services/catalog';
 import type { EnseigneId, Product } from '../types/catalog';
 import type { ShoppingList } from '../types/list';
+import type { ManualPrice, SelectedPrice } from '../types/prices';
 import type { ComparatorOptions, Store } from '../types/stores';
 
 export type Theme = 'light' | 'dark';
@@ -50,6 +51,22 @@ export interface ShoppingListValue {
   clearAssignments: () => void;
 }
 
+export type PricesStatus = 'sans-magasin' | 'chargement' | 'pret' | 'erreur';
+
+export interface PricesValue {
+  status: PricesStatus;
+  error?: string;
+  /** Date de la dernière mise à jour des prix Open Prices (millisecondes). */
+  updatedAt?: number;
+  refresh: () => void;
+  /** Prix retenu pour une fiche dans un magasin, selon les règles de choix. */
+  priceAt: (productId: string, storeId: string) => SelectedPrice | null;
+  manualPrice: (productId: string, storeId: string) => ManualPrice | undefined;
+  setManualPrice: (productId: string, storeId: string, price: ManualPrice) => void;
+  removeManualPrice: (productId: string, storeId: string) => void;
+}
+
+export const PricesContext = createContext<PricesValue | null>(null);
 export const SettingsContext = createContext<SettingsValue | null>(null);
 export const CatalogContext = createContext<CatalogValue | null>(null);
 export const ShoppingListContext = createContext<ShoppingListValue | null>(null);

@@ -4,8 +4,9 @@ import { CategoryNav } from '../components/catalog/CategoryNav';
 import { CustomProductDialog } from '../components/catalog/CustomProductDialog';
 import { ProductGrid } from '../components/catalog/ProductGrid';
 import { getCategory } from '../data/categories';
-import { useCatalog } from '../hooks/useAppContexts';
-import type { CategoryId } from '../types/catalog';
+import { useCatalog, useSettings } from '../hooks/useAppContexts';
+import { useOffers } from '../hooks/useOffers';
+import type { CategoryId, Product } from '../types/catalog';
 import {
   countByCategory,
   DEFAULT_FILTERS,
@@ -17,6 +18,12 @@ import {
 
 export function CatalogPage() {
   const { catalog, favorites } = useCatalog();
+  const { stores } = useSettings();
+  const { offerFor } = useOffers();
+  const prices = useMemo(
+    () => ({ priceOf: (p: Product) => offerFor(p)?.cents ?? null }),
+    [offerFor],
+  );
   const [filters, setFilters] = useState<CatalogFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<CatalogSort>('nom');
   const [dialog, setDialog] = useState<{ open: boolean; name?: string }>({ open: false });
@@ -26,8 +33,8 @@ export function CatalogPage() {
   const effective = useMemo(() => ({ ...filters, query }), [filters, query]);
 
   const acrossCategories = useMemo(
-    () => filterProducts(catalog, effective, undefined, { ignoreCategory: true, favorites }),
-    [catalog, effective, favorites],
+    () => filterProducts(catalog, effective, prices, { ignoreCategory: true, favorites }),
+    [catalog, effective, favorites, prices],
   );
   const counts = useMemo(() => countByCategory(acrossCategories), [acrossCategories]);
   const results = useMemo(() => {
@@ -35,8 +42,8 @@ export function CatalogPage() {
       effective.categoryId === 'all'
         ? acrossCategories
         : acrossCategories.filter((p) => p.categoryId === effective.categoryId);
-    return sortProducts(inCategory, sort);
-  }, [acrossCategories, effective.categoryId, sort]);
+    return sortProducts(inCategory, sort, prices);
+  }, [acrossCategories, effective.categoryId, sort, prices]);
 
   const heading =
     filters.categoryId === 'all' ? 'Tous les rayons' : getCategory(filters.categoryId).label;
@@ -81,7 +88,7 @@ export function CatalogPage() {
           onChange={(patch) => setFilters((f) => ({ ...f, ...patch }))}
           sort={sort}
           onSortChange={setSort}
-          pricesAvailable={false}
+          pricesAvailable={stores.length > 0}
           favoritesCount={favorites.size}
           onAddProduct={() => setDialog({ open: true })}
         />

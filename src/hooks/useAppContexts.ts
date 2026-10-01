@@ -1,5 +1,5 @@
 import { useContext, type Context } from 'react';
-import { CatalogContext, SettingsContext, ShoppingListContext } from './contexts';
+import { CatalogContext, PricesContext, SettingsContext, ShoppingListContext } from './contexts';
 
 function useRequired<T>(context: Context<T | null>, name: string): T {
   const value = useContext(context);
@@ -17,4 +17,8 @@ export function useCatalog() {
 
 export function useShoppingList() {
   return useRequired(ShoppingListContext, 'useShoppingList');
+}
+
+export function usePrices() {
+  return useRequired(PricesContext, 'usePrices');
 }

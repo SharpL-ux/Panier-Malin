@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { OFF_PRODUCT_URL } from '../services/endpoints';
+import { openPricesHandlers } from './openPricesFixtures';
 
 /**
  * Réponses simulées au format exact des API. Les codes-barres utilisés ici sont des
@@ -20,6 +21,7 @@ export const OFF_FIXTURES: Record<string, Record<string, unknown>> = {
 };
 
 export const handlers = [
+  ...openPricesHandlers,
   http.get(`${OFF_PRODUCT_URL}/:ean`, ({ params }) => {
     const product = OFF_FIXTURES[String(params.ean)];
     if (!product) {
