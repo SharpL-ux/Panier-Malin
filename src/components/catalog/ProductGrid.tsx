@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { getEnseigne } from '../../data/enseignes';
-import { useSettings, useShoppingList } from '../../hooks/useAppContexts';
+import { useCatalog, useSettings, useShoppingList } from '../../hooks/useAppContexts';
 import { referenceAt } from '../../services/catalog';
 import { findItem } from '../../services/shoppingList';
 import type { Product } from '../../types/catalog';
@@ -15,6 +15,7 @@ export const PAGE_SIZE = 48;
 export function ProductGrid({ products }: { products: Product[] }) {
   const [limit, setLimit] = useState(PAGE_SIZE);
   const { enseigne } = useSettings();
+  const { favorites, toggleFavorite } = useCatalog();
   const { list, addProduct, changeQuantity } = useShoppingList();
   const visible = useMemo(() => products.slice(0, limit), [products, limit]);
   const remaining = products.length - visible.length;
@@ -32,6 +33,8 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 reference={enseigne === 'all' ? undefined : referenceAt(product, enseigne)}
                 price={null}
                 item={findItem(list, product.id)}
+                isFavorite={favorites.has(product.id)}
+                onToggleFavorite={toggleFavorite}
                 onAdd={addProduct}
                 onChangeQuantity={changeQuantity}
               />

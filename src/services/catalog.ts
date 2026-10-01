@@ -45,12 +45,14 @@ export interface CatalogFilters {
   query: string;
   categoryId: CategoryId | 'all';
   knownPriceOnly: boolean;
+  favoritesOnly: boolean;
 }
 
 export const DEFAULT_FILTERS: CatalogFilters = {
   query: '',
   categoryId: 'all',
   knownPriceOnly: false,
+  favoritesOnly: false,
 };
 
 export interface PriceLookup {
@@ -64,7 +66,7 @@ export function filterProducts(
   catalog: Catalog,
   filters: CatalogFilters,
   prices: PriceLookup = NO_PRICES,
-  options: { ignoreCategory?: boolean } = {},
+  options: { ignoreCategory?: boolean; favorites?: Set<string> } = {},
 ): Product[] {
   const query = filters.query.trim();
   return catalog.products.filter((product) => {
@@ -76,6 +78,7 @@ export function filterProducts(
       return false;
     }
     if (filters.knownPriceOnly && prices.priceOf(product) === null) return false;
+    if (filters.favoritesOnly && !options.favorites?.has(product.id)) return false;
     if (query && !matchesQuery(haystackOf(product), query)) return false;
     return true;
   });

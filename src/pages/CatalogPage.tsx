@@ -16,7 +16,7 @@ import {
 } from '../services/catalog';
 
 export function CatalogPage() {
-  const { catalog } = useCatalog();
+  const { catalog, favorites } = useCatalog();
   const [filters, setFilters] = useState<CatalogFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<CatalogSort>('nom');
   const [dialog, setDialog] = useState<{ open: boolean; name?: string }>({ open: false });
@@ -26,8 +26,8 @@ export function CatalogPage() {
   const effective = useMemo(() => ({ ...filters, query }), [filters, query]);
 
   const acrossCategories = useMemo(
-    () => filterProducts(catalog, effective, undefined, { ignoreCategory: true }),
-    [catalog, effective],
+    () => filterProducts(catalog, effective, undefined, { ignoreCategory: true, favorites }),
+    [catalog, effective, favorites],
   );
   const counts = useMemo(() => countByCategory(acrossCategories), [acrossCategories]);
   const results = useMemo(() => {
@@ -82,6 +82,7 @@ export function CatalogPage() {
           sort={sort}
           onSortChange={setSort}
           pricesAvailable={false}
+          favoritesCount={favorites.size}
           onAddProduct={() => setDialog({ open: true })}
         />
 

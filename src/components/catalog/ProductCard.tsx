@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Star } from 'lucide-react';
 import { memo, type CSSProperties } from 'react';
 import { getCategory } from '../../data/categories';
 import type { Product, StoreReference } from '../../types/catalog';
@@ -15,6 +15,8 @@ interface Props {
   reference?: StoreReference;
   price: PriceLabelValue | null;
   item?: ListItem;
+  isFavorite: boolean;
+  onToggleFavorite: (productId: string) => void;
   onAdd: (product: Product) => void;
   onChangeQuantity: (itemId: string, steps: number) => void;
 }
@@ -47,6 +49,8 @@ export const ProductCard = memo(function ProductCard({
   reference,
   price,
   item,
+  isFavorite,
+  onToggleFavorite,
   onAdd,
   onChangeQuantity,
 }: Props) {
@@ -76,7 +80,23 @@ export const ProductCard = memo(function ProductCard({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-2 leading-tight font-semibold">{product.name}</h3>
+          <div className="flex items-start gap-1">
+            <h3 className="line-clamp-2 flex-1 leading-tight font-semibold">{product.name}</h3>
+            <button
+              type="button"
+              onClick={() => onToggleFavorite(product.id)}
+              aria-pressed={isFavorite}
+              aria-label={
+                isFavorite
+                  ? `Retirer ${product.name} des favoris`
+                  : `Ajouter ${product.name} aux favoris`
+              }
+              title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              className="-mt-1.5 -mr-1.5 grid size-9 shrink-0 place-items-center rounded-full text-ink-soft hover:bg-surface-2 hover:text-ink aria-pressed:text-ink"
+            >
+              <Star size={18} aria-hidden fill={isFavorite ? 'currentColor' : 'none'} />
+            </button>
+          </div>
           {product.brand && <p className="mt-0.5 text-sm font-medium">{product.brand}</p>}
           <ul
             className="mt-1.5 flex flex-wrap items-center gap-1 text-xs"

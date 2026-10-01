@@ -9,6 +9,7 @@ interface Props {
   onSortChange: (sort: CatalogSort) => void;
   /** Faux tant qu'aucune source de prix n'est branchée : les tris et filtres par prix sont alors désactivés. */
   pricesAvailable: boolean;
+  favoritesCount: number;
   onAddProduct: () => void;
 }
 
@@ -51,6 +52,7 @@ export function CatalogToolbar({
   sort,
   onSortChange,
   pricesAvailable,
+  favoritesCount,
   onAddProduct,
 }: Props) {
   const searchId = useId();
@@ -100,6 +102,12 @@ export function CatalogToolbar({
       </div>
       {/* Sur mobile, filtres et tri tiennent sur une seule ligne défilante pour laisser la place aux produits. */}
       <div className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
+        <Toggle
+          pressed={filters.favoritesOnly}
+          onClick={() => onChange({ favoritesOnly: !filters.favoritesOnly })}
+        >
+          {`Mes favoris (${favoritesCount})`}
+        </Toggle>
         <Toggle
           pressed={filters.knownPriceOnly}
           disabled={!pricesAvailable}

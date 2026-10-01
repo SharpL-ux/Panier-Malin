@@ -69,6 +69,14 @@ describe('recherche et filtres', () => {
     expect(countByCategory(products).get('cremerie')).toBe(2);
   });
 
+  it('« mes favoris » ne garde que les fiches étoilées', () => {
+    const f = { ...DEFAULT_FILTERS, favoritesOnly: true };
+    expect(ids(filterProducts(catalog, f, undefined, { favorites: new Set(['bananes']) }))).toEqual(
+      ['bananes'],
+    );
+    expect(filterProducts(catalog, f)).toEqual([]);
+  });
+
   it('« prix connu uniquement » garde les fiches qui ont un prix', () => {
     const prices = { priceOf: (p: Product) => (p.id === 'lait' ? 95 : null) };
     expect(
