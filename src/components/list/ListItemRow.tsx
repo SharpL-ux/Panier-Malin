@@ -45,36 +45,48 @@ export function ListItemRow({
 
   return (
     <li className={item.checked ? 'bg-surface-2' : ''}>
-      <div className="flex items-center gap-3 px-3 py-2.5">
+      <div className="flex items-start gap-2 px-3 py-2.5 sm:gap-3">
         <input
           id={checkboxId}
           type="checkbox"
           checked={item.checked}
           onChange={onToggle}
-          className="size-6 shrink-0 accent-[var(--primary)]"
+          className="mt-1 size-6 shrink-0 accent-[var(--primary)]"
         />
-        <span aria-hidden className="text-xl">
+        <span aria-hidden className="mt-0.5 text-xl">
           {d.icon}
         </span>
-        <div className="min-w-0 flex-1">
-          <label
-            htmlFor={checkboxId}
-            className={`font-medium ${item.checked ? 'text-ink-soft line-through' : ''}`}
-          >
-            {d.title}
-          </label>
-          <p className="text-sm text-ink-soft">{d.detail}</p>
-          {item.note && <p className="text-sm italic">{item.note}</p>}
+        {/* Sur téléphone, le sélecteur de quantité passe sous le nom quand la place manque. */}
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="min-w-0 [overflow-wrap:anywhere]">
+            <label
+              htmlFor={checkboxId}
+              className={`font-medium ${item.checked ? 'text-ink-soft line-through' : ''}`}
+            >
+              {d.title}
+            </label>
+            <p className="text-sm text-ink-soft">
+              {d.detail}
+              {d.price && (
+                <>
+                  <span aria-hidden> · </span>
+                  <span className="font-semibold text-ink tabular">{d.price}</span>
+                </>
+              )}
+            </p>
+            {item.note && <p className="text-sm italic">{item.note}</p>}
+          </div>
+          <div className="ml-auto">
+            <QuantityStepper
+              size="sm"
+              label={d.title}
+              display={d.quantity}
+              isLast={item.quantity - item.step <= 0}
+              onIncrement={() => onChangeQuantity(1)}
+              onDecrement={() => onChangeQuantity(-1)}
+            />
+          </div>
         </div>
-        {d.price && <span className="shrink-0 text-sm font-semibold tabular">{d.price}</span>}
-        <QuantityStepper
-          size="sm"
-          label={d.title}
-          display={d.quantity}
-          isLast={item.quantity - item.step <= 0}
-          onIncrement={() => onChangeQuantity(1)}
-          onDecrement={() => onChangeQuantity(-1)}
-        />
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
