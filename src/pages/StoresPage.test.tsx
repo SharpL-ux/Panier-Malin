@@ -4,9 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { App } from '../App';
 import { OPEN_PRICES_API_URL } from '../services/endpoints';
-import { locationToStore } from '../services/openPrices';
-import { SCHEMA_VERSION, STORAGE_PREFIX } from '../services/storage';
-import { LOCATIONS } from '../test/openPricesFixtures';
+import { saveStores } from '../test/helpers';
 import { server } from '../test/server';
 
 function start(hash: string) {
@@ -14,14 +12,6 @@ function start(hash: string) {
   const user = userEvent.setup();
   render(<App />);
   return user;
-}
-
-export function saveStores(...ids: number[]) {
-  const stores = ids.map((id) => locationToStore(LOCATIONS.find((l) => l.id === id)));
-  localStorage.setItem(
-    `${STORAGE_PREFIX}magasins`,
-    JSON.stringify({ v: SCHEMA_VERSION, data: { stores, mainStoreId: stores[0]?.id } }),
-  );
 }
 
 describe('mes magasins', () => {

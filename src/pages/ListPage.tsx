@@ -7,6 +7,9 @@ import { ListSummaryBar } from '../components/list/ListSummaryBar';
 import { CATEGORIES } from '../data/categories';
 import { getEnseigne } from '../data/enseignes';
 import { useCatalog, useSettings, useShoppingList } from '../hooks/useAppContexts';
+import { useComparison } from '../hooks/useComparison';
+import type { Cell } from '../services/comparator';
+import { formatCents } from '../utils/money';
 import { referenceAt } from '../services/catalog';
 import { storeLabel } from '../services/stores';
 import type { ListItem } from '../types/list';
@@ -72,6 +75,22 @@ export function ListPage() {
   const [editing, setEditing] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [grouping, setGrouping] = useState<Grouping>('rayon');
+  const { lines: pricedLines, comparison } = useComparison('complet');
+  const rowByItem = new Map(pricedLines.map((l, r) => [l.item.id, r]));
+
+  /** Prix d'un article : dans son magasin s'il est affecté, sinon le plus bas connu. */
+  const cellFor = (item: ListItem): Cell | null => {
+    const r = rowByItem.get(item.id);
+    const row = r === undefined ? [] : (comparison.matrix[r] ?? []);
+    const index = item.assignedStoreId
+      ? stores.findIndex((s) => s.id === item.assignedStoreId)
+      : -1;
+    if (index >= 0) return row[index] ?? null;
+    return row.reduce<Cell | null>(
+      (best, c) => (c && (!best || c.cents < best.cents) ? c : best),
+      null,
+    );
+  };
 
   const storeById = new Map(stores.map((s) => [s.id, s]));
   const hasAssignments = list.items.some(
@@ -107,6 +126,10 @@ export function ListPage() {
       detail: `${brand}${packLabel(product)}${where}`,
       icon: product.icon,
       quantity: productQuantityLabel(product, item.quantity),
+      price: (() => {
+        const cell = cellFor(item);
+        return cell ? formatCents(cell.cents) : undefined;
+      })(),
     };
   };
 
@@ -288,7 +311,47 @@ export function ListPage() {
         </div>
       )}
 
-      <ListSummaryBar itemCount={list.items.length} checkedCount={checkedCount} />
+      <ListSummaryBar itemCount={list.items.length} checkedCount={checkedCount}>
+        {(() => {
+          const link = 'font-medium underline decoration-line-strong underline-offset-2';
+          if (stores.length === 0) {
+            return (
+              <Link to="/magasins" className={link}>
+                Choisir mes magasins pour voir les prix
+              </Link>
+            );
+          }
+          if (hasAssignments) {
+            const assigned = list.items.filter(
+              (i) => i.assignedStoreId && storeById.has(i.assignedStoreId),
+            );
+            const total = assigned.reduce((sum, i) => sum + (cellFor(i)?.cents ?? 0), 0);
+            const count = new Set(assigned.map((i) => i.assignedStoreId)).size;
+            return (
+              <Link to="/comparer" className={link}>
+                Panier réparti : {formatCents(total)} dans {count}{' '}
+                {count > 1 ? 'magasins' : 'magasin'}
+              </Link>
+            );
+          }
+          const best = comparison.totals.find((t) => t.storeId === comparison.cheapestStoreId);
+          const bestStore = best ? storeById.get(best.storeId) : undefined;
+          if (best && bestStore) {
+            const lead = comparison.mostExpensiveStoreId ? 'Moins cher chez' : 'Total estimé chez';
+            return (
+              <Link to="/comparer" className={link}>
+                {lead} {storeLabel(bestStore)} : {formatCents(best.totalCents)} ({best.pricedCount}/
+                {comparison.itemCount} articles avec prix)
+              </Link>
+            );
+          }
+          return (
+            <Link to="/comparer" className={link}>
+              Comparer les prix
+            </Link>
+          );
+        })()}
+      </ListSummaryBar>
       <HistoryDialog open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );

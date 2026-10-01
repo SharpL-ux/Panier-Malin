@@ -1,4 +1,4 @@
-import { LayoutGrid, ListChecks, Store, type LucideIcon } from 'lucide-react';
+import { LayoutGrid, ListChecks, Scale, Store, type LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   to: string;
@@ -12,5 +12,6 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Catalogue', icon: LayoutGrid },
   { to: '/liste', label: 'Ma liste', icon: ListChecks, showCount: true },
+  { to: '/comparer', label: 'Comparer', icon: Scale },
   { to: '/magasins', label: 'Magasins', icon: Store },
 ];

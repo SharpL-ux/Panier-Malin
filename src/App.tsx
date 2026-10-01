@@ -3,6 +3,7 @@ import { AppShell } from './components/layout/AppShell';
 import { AppProviders } from './components/providers/AppProviders';
 import { CatalogPage } from './pages/CatalogPage';
 import { ListPage } from './pages/ListPage';
+import { ComparePage } from './pages/ComparePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { StoresPage } from './pages/StoresPage';
 
@@ -18,6 +19,7 @@ export function App() {
           <Route element={<AppShell />}>
             <Route index element={<CatalogPage />} />
             <Route path="liste" element={<ListPage />} />
+            <Route path="comparer" element={<ComparePage />} />
             <Route path="magasins" element={<StoresPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
