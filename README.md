@@ -6,6 +6,8 @@ Application web libre, sans compte ni serveur : tout reste dans votre navigateur
 
 > **État du projet : V1 complète (étapes 1 à 6) et application installable.** La richesse des prix dépend des relevés Open Prices et des codes-barres du catalogue : voir les [limites connues](#limites-connues).
 
+**Essayer l'application : [sharpl-ux.github.io/panier-malin](https://sharpl-ux.github.io/panier-malin/)**, sur téléphone ou ordinateur, installable comme une application.
+
 <p>
   <img src="docs/captures/catalogue-mobile.png" width="260" alt="Catalogue sur mobile : rayon Volaille, fiches certifiées halal, magasin Carrefour choisi">
   <img src="docs/captures/liste-mode-sombre.png" width="260" alt="Liste de la semaine en mode sombre, classée par rayon, avec le prix de chaque article et le total estimé">
@@ -51,7 +53,7 @@ Ensuite :
 Prérequis : Node.js 22 (20.19 au minimum) et npm.
 
 ```bash
-git clone https://github.com/VOTRE-COMPTE/panier-malin.git
+git clone https://github.com/SharpL-ux/panier-malin.git
 cd panier-malin
 npm ci
 npm run dev
@@ -194,7 +196,7 @@ Les règles sont codées dans `src/services/pricing.ts` et `src/services/compara
 
 1. Créez un dépôt sur GitHub et poussez-y le code.
 2. Dans le dépôt : **Settings > Pages > Build and deployment > Source : GitHub Actions**.
-3. Chaque mise à jour de la branche `main` lance le workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) : lint, formatage, types, tests, build, puis publication sur `https://VOTRE-COMPTE.github.io/NOM-DU-DEPOT/`. Les propositions de modification (pull requests) sont vérifiées sans être publiées.
+3. Chaque mise à jour de la branche `main` lance le workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) : lint, formatage, types, tests, build, puis publication sur `https://sharpl-ux.github.io/panier-malin/`. Les propositions de modification (pull requests) sont vérifiées sans être publiées.
 4. Remplacez l'adresse du dépôt dans [`src/config.ts`](src/config.ts) : elle est affichée dans le pied de page.
 
 Le chemin du site suit automatiquement le nom du dépôt (variable `BASE_PATH`). Les adresses internes utilisent une ancre (`…/#/liste`), car GitHub Pages ne sait pas servir une application à pages multiples : un rafraîchissement sur `/liste` renverrait sinon une erreur 404.
