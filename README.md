@@ -59,18 +59,20 @@ npm run dev
 
 L'application s'ouvre sur http://localhost:5173.
 
-| Commande                                | Rôle                                                                           |
-| --------------------------------------- | ------------------------------------------------------------------------------ |
-| `npm run dev`                           | Serveur de développement avec rechargement à chaud                             |
-| `npm run build`                         | Vérification des types puis build de production dans `dist/`                   |
-| `npm run preview`                       | Sert le build de production en local                                           |
-| `npm test`                              | Tests unitaires et d'interface (Vitest, Testing Library, MSW)                  |
-| `npm run lint`                          | ESLint                                                                         |
-| `npm run format`                        | Formate le code avec Prettier                                                  |
-| `npm run typecheck`                     | Vérification TypeScript seule                                                  |
-| `npm run format:check`                  | Vérifie le formatage, comme l'intégration continue                             |
-| `npm run eans:proposer`                 | Propose des codes-barres pour les références, à relire (accès Internet requis) |
-| `npm run eans:appliquer -- fichier.csv` | Ajoute au catalogue les codes-barres validés                                   |
+| Commande                                     | Rôle                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `npm run dev`                                | Serveur de développement avec rechargement à chaud                                 |
+| `npm run build`                              | Vérification des types puis build de production dans `dist/`                       |
+| `npm run preview`                            | Sert le build de production en local                                               |
+| `npm test`                                   | Tests unitaires et d'interface (Vitest, Testing Library, MSW)                      |
+| `npm run lint`                               | ESLint                                                                             |
+| `npm run format`                             | Formate le code avec Prettier                                                      |
+| `npm run typecheck`                          | Vérification TypeScript seule                                                      |
+| `npm run format:check`                       | Vérifie le formatage, comme l'intégration continue                                 |
+| `npm run eans:proposer`                      | Propose des codes-barres pour les références, à relire (accès Internet requis)     |
+| `npm run eans:appliquer -- fichier.csv`      | Ajoute au catalogue les codes-barres validés                                       |
+| `npm run catalogue:exporter`                 | Écrit le catalogue en Markdown, modifiable à la main                               |
+| `npm run catalogue:importer -- catalogue.md` | Réintègre un catalogue Markdown modifié (`--essai` pour vérifier sans rien écrire) |
 
 ## Organisation du code
 

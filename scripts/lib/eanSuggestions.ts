@@ -267,6 +267,17 @@ export function applyValidated(products: Product[], rows: Record<string, string>
 }
 
 /** Écrit le catalogue au format du dépôt : une fiche par ligne. */
+/** JSON compact avec une espace après « : » et « , », comme le fichier du dépôt. */
+function compactJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(compactJson).join(', ')}]`;
+  if (value !== null && typeof value === 'object') {
+    const entries = Object.entries(value).filter(([, v]) => v !== undefined);
+    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}: ${compactJson(v)}`).join(', ')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+/** Un produit par ligne : les modifications restent lisibles dans l'historique git. */
 export function formatProductsJson(products: Product[]): string {
-  return '[\n' + products.map((p) => '  ' + JSON.stringify(p)).join(',\n') + '\n]\n';
+  return '[\n' + products.map((p) => '  ' + compactJson(p)).join(',\n') + '\n]\n';
 }

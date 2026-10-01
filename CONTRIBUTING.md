@@ -114,3 +114,14 @@ Pour compléter les codes-barres des références sans les chercher un par un :
 4. Lancez `npm test`, puis proposez la modification de `src/data/products.json` en précisant, pour chaque code, d'où vient la vérification.
 
 Ne validez jamais un code-barres que vous n'avez pas vérifié : un mauvais code fait apparaître les prix d'un autre produit.
+
+## Modifier le catalogue avec un fichier Markdown
+
+Pour revoir beaucoup de produits d'un coup sans toucher au JSON :
+
+1. `npm run catalogue:exporter` écrit `scripts/out/catalogue.md` : un tableau par rayon, avec l'icône, le nom, le format, la mention halal et les marques par enseigne de chaque produit. Le mode d'emploi est en tête du fichier.
+2. Modifiez, ajoutez (colonne `id` vide) ou supprimez des lignes dans n'importe quel éditeur de texte.
+3. `npm run catalogue:importer -- scripts/out/catalogue.md --essai` liste les ajouts, modifications et suppressions, et signale chaque erreur avec son numéro de ligne, sans rien écrire.
+4. Relancez sans `--essai` pour mettre à jour `src/data/products.json`, puis `npm test`.
+
+Les codes Open Food Facts des fruits et légumes et les codes-barres sont conservés ; un code-barres est retiré si la marque de sa référence change. Les changements de rayons (nom, icône, ordre) sont signalés et se reportent dans `src/data/categories.ts`.
