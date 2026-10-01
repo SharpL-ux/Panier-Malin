@@ -84,4 +84,48 @@ describe('comparateur', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('2,19 €')).toBeInTheDocument();
   });
+
+  it('propose un panier optimal et l’applique à la liste', async () => {
+    saveStores(101, 102);
+    saveList([
+      ['Bananes', 1],
+      ['Pommes', 1],
+      ['Riz basmati', 1],
+    ]);
+    const user = start();
+    const panel = (await screen.findByRole('heading', { name: 'Panier optimal' })).closest(
+      'section',
+    ) as HTMLElement;
+    expect(within(panel).getByText(/^Un seul magasin suffit/)).toBeInTheDocument();
+    expect(panel).toHaveTextContent('Lidl, Courbevoie : 4,48 € pour 2 articles sur 3');
+
+    const threshold = within(panel).getByRole('textbox', {
+      name: 'Économie minimale pour un magasin de plus (€)',
+    });
+    await user.clear(threshold);
+    await user.type(threshold, '0{Enter}');
+    expect(panel).toHaveTextContent(
+      'Lidl, Courbevoie + Carrefour Market, Courbevoie : 4,18 € pour 2 articles sur 3',
+    );
+    expect(panel).toHaveTextContent(
+      'Soit 0,30 € de moins qu’en allant seulement chez Lidl, Courbevoie.',
+    );
+    expect(panel).toHaveTextContent('À vérifier en magasin, faute de prix : Riz basmati.');
+
+    await user.click(within(panel).getByRole('button', { name: 'Appliquer à ma liste' }));
+    await user.click(within(panel).getByRole('link', { name: 'Voir ma liste' }));
+    await user.click(screen.getByRole('button', { name: 'Par magasin' }));
+    const lidl = screen
+      .getByRole('heading', { level: 2, name: 'Lidl, Courbevoie' })
+      .closest('section') as HTMLElement;
+    expect(within(lidl).getByRole('checkbox', { name: 'Bananes' })).toBeInTheDocument();
+    expect(within(lidl).getByRole('checkbox', { name: 'Riz basmati' })).toBeInTheDocument();
+    const carrefour = screen
+      .getByRole('heading', { level: 2, name: 'Carrefour Market, Courbevoie' })
+      .closest('section') as HTMLElement;
+    expect(within(carrefour).getByRole('checkbox', { name: 'Pommes' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /^Panier réparti : 4,18\s€ dans 2 magasins$/ }),
+    ).toBeInTheDocument();
+  });
 });

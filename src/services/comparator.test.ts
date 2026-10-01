@@ -3,7 +3,7 @@ import type { Product } from '../types/catalog';
 import type { ListItem } from '../types/list';
 import type { SelectedPrice } from '../types/prices';
 import type { Store } from '../types/stores';
-import { compareStores, costMatrix, rowExtremes, type Line } from './comparator';
+import { compareStores, costMatrix, optimalBasket, rowExtremes, type Line } from './comparator';
 import type { PriceGetter } from './pricing';
 
 export const store = (id: string): Store => ({
@@ -149,5 +149,89 @@ describe('comparaison des magasins', () => {
     const c = compareStores(lines, [A, B, C], prices, 'complet');
     expect(rowExtremes(c.matrix[0]!)).toEqual({ min: 120, max: 150 });
     expect(rowExtremes([c.matrix[0]![0]!, null])).toBeNull();
+  });
+});
+
+describe('panier optimal', () => {
+  const lines = [line('riz'), line('pates'), line('huile')];
+  const prices = getter({
+    riz: { A: 150, B: 120 },
+    pates: { A: 99, B: 110 },
+    huile: { A: 350, B: 390, C: 300 },
+  });
+  const opts = { maxStores: 2, minSavingCents: 300, mainStoreId: 'A' };
+
+  it('ne propose rien sans magasin ou sans article', () => {
+    expect(optimalBasket(lines, [], prices, opts)).toBeNull();
+    expect(optimalBasket([], [A, B], prices, opts)).toBeNull();
+  });
+
+  it('reste dans un seul magasin quand un deuxième ferait économiser moins que le seuil', () => {
+    // A seul : 599 ; A + C : 549, soit 50 centimes d'économie, sous le seuil de 3 €.
+    const basket = optimalBasket(lines, [A, B, C], prices, opts)!;
+    expect(basket).toMatchObject({
+      storeIds: ['A'],
+      totalCents: 599,
+      savingsCents: 0,
+      toVerify: [],
+    });
+  });
+
+  it('répartit entre magasins quand l’économie dépasse le seuil', () => {
+    const basket = optimalBasket(lines, [A, B, C], prices, { ...opts, minSavingCents: 0 })!;
+    expect(basket.storeIds).toEqual(['B', 'C']);
+    expect(basket.totalCents).toBe(530);
+    expect(basket.assignments).toEqual({ 'item-riz': 'B', 'item-pates': 'B', 'item-huile': 'C' });
+    expect(basket.perStore).toEqual([
+      { storeId: 'B', itemIds: ['item-riz', 'item-pates'], totalCents: 230 },
+      { storeId: 'C', itemIds: ['item-huile'], totalCents: 300 },
+    ]);
+    expect(basket.singleStoreId).toBe('A');
+    expect(basket.savingsCents).toBe(69);
+  });
+
+  it('respecte le nombre maximal de magasins, même plus grand que vos magasins', () => {
+    const three = optimalBasket(lines, [A, B, C], prices, {
+      ...opts,
+      maxStores: 3,
+      minSavingCents: 0,
+    })!;
+    expect(three).toMatchObject({ storeIds: ['A', 'B', 'C'], totalCents: 519 });
+    const capped = optimalBasket(lines, [A, B], prices, {
+      ...opts,
+      maxStores: 3,
+      minSavingCents: 0,
+    })!;
+    expect(capped).toMatchObject({ storeIds: ['A', 'B'], totalCents: 569 });
+    const one = optimalBasket(lines, [A, B, C], prices, {
+      ...opts,
+      maxStores: 1,
+      minSavingCents: 0,
+    })!;
+    expect(one.storeIds).toEqual(['A']);
+  });
+
+  it('privilégie les articles couverts et place ceux sans prix chez le magasin principal', () => {
+    const sparse = getter({ riz: { B: 120 }, pates: { A: 99 } });
+    const basket = optimalBasket([line('riz'), line('pates'), line('sel')], [A, B], sparse, opts)!;
+    expect(basket).toMatchObject({ storeIds: ['A', 'B'], coveredCount: 2, toVerify: ['item-sel'] });
+    expect(basket.assignments['item-sel']).toBe('A');
+    const none = optimalBasket([line('sel')], [A, B], getter({}), { ...opts, mainStoreId: 'B' })!;
+    expect(none).toMatchObject({
+      storeIds: ['B'],
+      toVerify: ['item-sel'],
+      totalCents: 0,
+      assignments: { 'item-sel': 'B' },
+    });
+  });
+
+  it('départage les égalités par le magasin principal, puis par l’ordre de vos magasins', () => {
+    const same = getter({ riz: { A: 100, B: 100 } });
+    expect(
+      optimalBasket([line('riz')], [A, B], same, { ...opts, mainStoreId: 'B' })!.storeIds,
+    ).toEqual(['B']);
+    expect(
+      optimalBasket([line('riz')], [A, B], same, { ...opts, mainStoreId: undefined })!.storeIds,
+    ).toEqual(['A']);
   });
 });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { CompareTable } from '../components/compare/CompareTable';
+import { OptimalBasketPanel } from '../components/compare/OptimalBasketPanel';
 import { PriceHistoryDialog } from '../components/compare/PriceHistoryDialog';
 import { PricesStatusBar } from '../components/compare/PricesStatusBar';
 import { StoreTotals } from '../components/compare/StoreTotals';
@@ -69,6 +70,7 @@ export function ComparePage() {
   const [entry, setEntry] = useState<{ product: Product; storeId: string } | null>(null);
   const noCommon = comparison.mode === 'communs' && comparison.comparedRows.length === 0;
   const anyPrice = comparison.totals.some((t) => t.pricedCount > 0);
+  const hasPrices = comparison.matrix.some((row) => row.some(Boolean));
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 pt-6 pb-28 lg:pb-12">
@@ -121,6 +123,7 @@ export function ComparePage() {
             {summarize(comparison, stores)}
           </p>
           {!noCommon && anyPrice && <StoreTotals comparison={comparison} stores={stores} />}
+          {hasPrices && <OptimalBasketPanel lines={lines} />}
           <CompareTable
             lines={lines}
             stores={stores}
