@@ -1,10 +1,12 @@
-import { LocateFixed, Search, Trash2 } from 'lucide-react';
+import { Download, LocateFixed, Search, Trash2, Upload } from 'lucide-react';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { EnseigneBadge } from '../components/ui/EnseigneBadge';
 import { ENSEIGNES, isEnseigneId } from '../data/enseignes';
 import { useSettings } from '../hooks/useAppContexts';
 import { nearbyLocations, OpenPricesError, searchLocations } from '../services/openPrices';
 import { MAX_STORES, storeLabel } from '../services/stores';
+import { parseSnapshot, restoreSnapshot, takeSnapshot } from '../services/sync';
+import { toIsoDate } from '../utils/dates';
 import type { EnseigneId } from '../types/catalog';
 import type { Store } from '../types/stores';
 import { createId } from '../utils/ids';
@@ -35,6 +37,81 @@ function StoreLine({ store }: { store: Store }) {
         </p>
       )}
     </div>
+  );
+}
+
+function exportData() {
+  const snapshot = takeSnapshot();
+  const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `panier-malin-donnees-${toIsoDate(new Date())}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}
+
+function DataSection() {
+  const [message, setMessage] = useState<{ ok: boolean; text: string }>();
+  const fileId = useId();
+  async function importData(file: File | undefined) {
+    if (!file) return;
+    const snapshot = parseSnapshot(await file.text());
+    if (!snapshot) {
+      setMessage({
+        ok: false,
+        text: 'Ce fichier n’est pas une sauvegarde Panier malin compatible.',
+      });
+      return;
+    }
+    const restored = restoreSnapshot(snapshot);
+    setMessage({ ok: true, text: `${restored} éléments restaurés. La page va se recharger.` });
+    window.setTimeout(() => window.location.reload(), 800);
+  }
+  return (
+    <section aria-labelledby="donnees" className="space-y-3">
+      <h2 id="donnees" className="font-display text-xl font-bold">
+        Vos données
+      </h2>
+      <p className="text-ink-soft">
+        Listes, favoris, magasins et prix saisis restent sur cet appareil. Exportez-les pour les
+        sauvegarder ou les copier sur un autre appareil ; la synchronisation automatique est prévue.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={exportData}
+          className={`${button} border border-line-strong bg-surface`}
+        >
+          <Download size={18} aria-hidden />
+          Exporter mes données
+        </button>
+        <label
+          htmlFor={fileId}
+          className={`${button} cursor-pointer border border-line-strong bg-surface`}
+        >
+          <Upload size={18} aria-hidden />
+          Importer une sauvegarde
+        </label>
+        <input
+          id={fileId}
+          type="file"
+          accept="application/json,.json"
+          className="sr-only"
+          onChange={(e) => void importData(e.target.files?.[0])}
+        />
+      </div>
+      {message && (
+        <p
+          role={message.ok ? 'status' : 'alert'}
+          className={message.ok ? '' : 'font-medium text-dear'}
+        >
+          {message.text}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -315,6 +392,8 @@ export function StoresPage() {
           </span>
         </label>
       </section>
+
+      <DataSection />
     </div>
   );
 }

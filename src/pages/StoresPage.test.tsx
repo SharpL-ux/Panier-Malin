@@ -108,3 +108,12 @@ describe('prix sur les fiches', () => {
     expect(screen.getByRole('link', { name: 'Choisir mes magasins' })).toBeInTheDocument();
   });
 });
+
+describe('vos données', () => {
+  it('propose d’exporter et d’importer une sauvegarde', () => {
+    window.location.hash = '#/magasins';
+    render(<App />);
+    expect(screen.getByRole('button', { name: 'Exporter mes données' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Importer une sauvegarde')).toHaveAttribute('type', 'file');
+  });
+});
