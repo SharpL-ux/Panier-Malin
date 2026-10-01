@@ -14,5 +14,6 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force"
   },
-  "include": ["scripts"]
+  "include": ["scripts"],
+  "exclude": ["scripts/out"]
 }

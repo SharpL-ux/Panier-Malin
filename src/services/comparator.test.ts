@@ -1,64 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Product } from '../types/catalog';
-import type { ListItem } from '../types/list';
-import type { SelectedPrice } from '../types/prices';
-import type { Store } from '../types/stores';
-import { compareStores, costMatrix, optimalBasket, rowExtremes, type Line } from './comparator';
-import type { PriceGetter } from './pricing';
-
-export const store = (id: string): Store => ({
-  id,
-  name: id,
-  enseigne: null,
-  address: '',
-  city: '',
-});
-export const product = (id: string, patch: Partial<Product> = {}): Product => ({
-  id,
-  name: id,
-  categoryId: 'epicerie-salee',
-  icon: '🛒',
-  pack: { count: 1, size: 1, unit: 'piece' },
-  soldByWeight: false,
-  halal: false,
-  references: [],
-  ...patch,
-});
-export const line = (id: string, quantity = 1, patch: Partial<Product> = {}): Line => ({
-  product: product(id, patch),
-  item: {
-    id: `item-${id}`,
-    productId: id,
-    quantity,
-    step: 1,
-    categoryId: 'epicerie-salee',
-    checked: false,
-    updatedAt: '2026-09-28T08:00:00.000Z',
-  } satisfies ListItem,
-});
-
-/** Prix en centimes par fiche et par magasin ; « ≈ » = relevé d'un autre magasin, « ! » = ancien. */
-export function getter(table: Record<string, Record<string, number | string>>): PriceGetter {
-  return (productId, storeId) => {
-    const raw = table[productId]?.[storeId];
-    if (raw === undefined) return null;
-    const text = String(raw);
-    const selected: SelectedPrice = {
-      observation: {
-        productId,
-        storeId,
-        cents: Number(text.replace(/[≈!]/g, '')),
-        per: 'pack',
-        date: '2026-09-20',
-        source: 'open-prices',
-        ...(text.includes('≈') ? { fallbackFrom: 'ailleurs' } : {}),
-      },
-      fallback: text.includes('≈'),
-      stale: text.includes('!'),
-    };
-    return selected;
-  };
-}
+import { getter, line, store } from '../test/builders';
+import { compareStores, costMatrix, optimalBasket, rowExtremes } from './comparator';
 
 const A = store('A');
 const B = store('B');

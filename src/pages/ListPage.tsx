@@ -1,6 +1,7 @@
-import { History, Pencil, Star } from 'lucide-react';
+import { FileDown, History, Pencil, Star } from 'lucide-react';
 import { useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
+import { ExportDialog } from '../components/list/ExportDialog';
 import { HistoryDialog } from '../components/list/HistoryDialog';
 import { ListItemRow, type ItemDescription } from '../components/list/ListItemRow';
 import { ListSummaryBar } from '../components/list/ListSummaryBar';
@@ -74,6 +75,7 @@ export function ListPage() {
   const { enseigne, stores } = useSettings();
   const [editing, setEditing] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [grouping, setGrouping] = useState<Grouping>('rayon');
   const { lines: pricedLines, comparison } = useComparison('complet');
   const rowByItem = new Map(pricedLines.map((l, r) => [l.item.id, r]));
@@ -244,6 +246,15 @@ export function ListPage() {
         >
           Tout décocher
         </button>
+        <button
+          type="button"
+          onClick={() => setExportOpen(true)}
+          disabled={list.items.length === 0}
+          className={`${toolButton} shrink-0`}
+        >
+          <FileDown size={16} aria-hidden />
+          Exporter en PDF
+        </button>
         {hasAssignments && (
           <div
             role="group"
@@ -353,6 +364,7 @@ export function ListPage() {
         })()}
       </ListSummaryBar>
       <HistoryDialog open={historyOpen} onClose={() => setHistoryOpen(false)} />
+      {exportOpen && <ExportDialog open onClose={() => setExportOpen(false)} />}
     </div>
   );
 }

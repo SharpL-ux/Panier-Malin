@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { App } from '../App';
 import { SCHEMA_VERSION, STORAGE_PREFIX } from '../services/storage';
+import { saveList, saveStores } from '../test/helpers';
 
 function openList(hash = '#/liste') {
   window.location.hash = hash;
@@ -115,5 +116,22 @@ describe('liste de la semaine', () => {
     expect(screen.getByRole('checkbox', { name: 'Bananes' })).not.toBeChecked();
     expect(screen.getByText('bien mûres')).toBeInTheDocument();
     expect(screen.getByText('1,5 kg')).toBeInTheDocument();
+  });
+
+  it('propose un PDF par magasin et le tableau comparatif', async () => {
+    saveStores(101, 102);
+    saveList([['Bananes', 1]]);
+    const user = openList();
+    await user.click(screen.getByRole('button', { name: 'Exporter en PDF' }));
+    const dialog = screen.getByRole('dialog', { name: 'Exporter la liste' });
+    expect(within(dialog).getByRole('button', { name: /^Lidl, Courbevoie/ })).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('button', { name: /^Carrefour Market, Courbevoie/ }),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('button', { name: 'Tableau comparatif (A4 paysage)' }),
+    ).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('checkbox', { name: 'Afficher les prix' }));
+    expect(within(dialog).getByRole('checkbox', { name: 'Afficher les prix' })).not.toBeChecked();
   });
 });

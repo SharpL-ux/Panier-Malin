@@ -115,3 +115,23 @@
 dialog::backdrop {
   background: rgb(15 24 32 / 0.55);
 }
+
+/* Impression de la liste : noir et blanc, sans navigation ni boutons. */
+@media print {
+  * {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  header,
+  footer,
+  nav,
+  button,
+  [role='progressbar'] {
+    display: none !important;
+  }
+  li,
+  tr {
+    break-inside: avoid;
+  }
+}
