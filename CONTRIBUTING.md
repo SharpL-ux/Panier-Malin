@@ -103,3 +103,14 @@ Le jambon et le saucisson ne sont acceptés que certifiés halal (jambon de dind
 - Chaque élément interactif est utilisable au clavier et porte un libellé explicite pour les lecteurs d'écran ; l'information ne repose jamais sur la couleur seule.
 - Les textes de l'interface sont en français, courts, à la voix active : un bouton dit ce qu'il fait (« Créer le produit », pas « Valider »).
 - Les appels aux API passent par les services existants, qui gèrent les limites de débit et le cache. Pas d'appel en masse : ces services sont gratuits et partagés.
+
+## Proposer des codes-barres avec le script
+
+Pour compléter les codes-barres des références sans les chercher un par un :
+
+1. `npm run eans:proposer` (accès Internet requis) écrit `scripts/out/propositions-eans.csv`, avec jusqu'à trois candidats par référence trouvés sur Open Prices. Pour un premier essai : `npm run eans:proposer -- --rayon cremerie --limite 20`.
+2. Relisez chaque ligne : ouvrez le lien Open Food Facts, vérifiez la marque, la photo et le format, puis écrivez « oui » dans la colonne `valider` des candidats exacts. Dans le doute, laissez vide.
+3. `npm run eans:appliquer -- scripts/out/propositions-eans.csv` ajoute les codes validés et vérifie le catalogue ; rien n'est écrit en cas d'erreur.
+4. Lancez `npm test`, puis proposez la modification de `src/data/products.json` en précisant, pour chaque code, d'où vient la vérification.
+
+Ne validez jamais un code-barres que vous n'avez pas vérifié : un mauvais code fait apparaître les prix d'un autre produit.
